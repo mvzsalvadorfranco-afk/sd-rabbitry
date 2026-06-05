@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>S&D Rabbitry</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;
+  --blue:#1565C0;--blue-pale:#E3F2FD;
+  --pink:#AD1457;--pink-pale:#FCE4EC;
+  --amber:#E9C46A;--amber-dark:#F4A261;--red:#E63946;
+  --bg:#F8F9FA;--card:#fff;--border:#E0E0E0;
+  --text:#1B1B1B;--muted:#6C757D;--radius:12px;
+}
+body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:480px;margin:0 auto;padding-bottom:80px}
+.topbar{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-title{font-size:18px;font-weight:bold}
+.topbar-sub{font-size:11px;opacity:.8;margin-top:1px;font-family:sans-serif}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.lang-toggle{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:11px;padding:4px 8px;border-radius:20px;cursor:pointer;font-family:sans-serif}
+.topbar-avatar{width:36px;height:36px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;cursor:pointer;font-family:sans-serif}
+.screen{display:none;padding:16px}
+.screen.active{display:block}
+
+/* LOGIN */
+#screen-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--green);position:fixed;top:0;left:0;right:0;bottom:0;z-index:200}
+.login-card{background:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:340px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:sans-serif}
+.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:#fff;font-family:sans-serif}
+.btn-primary{width:100%;background:var(--green);color:#fff;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;font-family:sans-serif}
+.btn-primary:hover{background:#245440}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:42px}
+.pass-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;display:flex;align-items:center}
+.pass-eye svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* CARDS */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.info-card h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;font-family:sans-serif}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px;align-items:center}
+.info-row:last-child{border-bottom:none}
+.info-key{color:var(--muted);font-family:sans-serif;font-size:13px}
+.info-val{font-weight:500;font-family:sans-serif}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--green);font-size:14px;cursor:pointer;margin-bottom:16px;background:none;border:none;padding:0;font-family:sans-serif}
+.detail-header{background:var(--green);color:#fff;border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.detail-name{font-size:26px;font-weight:bold}
+.detail-fullname{font-size:13px;opacity:.8;margin-top:2px;font-family:sans-serif}
+.detail-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;font-family:sans-serif}
+.btn-save{background:var(--green);color:#fff;border:none;width:100%;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;font-family:sans-serif;margin-top:4px}
+.btn-save:hover{background:#245440}
+.btn-outline{background:none;border:1.5px solid var(--green);color:var(--green);padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:sans-serif;font-weight:500}
+.btn-danger{background:none;border:1.5px solid var(--red);color:var(--red);padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:sans-serif;font-weight:500}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;background:#fff;font-family:sans-serif}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.filter-btn{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:sans-serif}
+.filter-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.rabbit-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.rabbit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
+.rabbit-card:hover{border-color:var(--green-light)}
+.rabbit-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.rabbit-avatar.buck{background:#E3F2FD}
+.rabbit-avatar.doe{background:#FCE4EC}
+.rabbit-info{flex:1;min-width:0}
+.rabbit-name{font-size:15px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rabbit-meta{font-size:12px;color:var(--muted);margin-top:2px;font-family:sans-serif}
+.rabbit-status{font-size:11px;padding:3px 8px;border-radius:10px;font-weight:bold;font-family:sans-serif;white-space:nowrap;flex-shrink:0}
+.status-active{background:var(--green-pale);color:var(--green)}
+.status-sale{background:#FFF9C4;color:#F57F17}
+.section-title{font-size:12px;font-weight:bold;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-family:sans-serif}
+
+/* PEDIGREE */
+.ped-tree{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;overflow-x:auto}
+.ped-tree h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;font-family:sans-serif}
+.ped-node{border-radius:7px;padding:7px 9px;font-family:sans-serif;min-width:0}
+.ped-node.gen1{background:var(--green);color:#fff;border:none;text-align:center}
+.ped-node.sire{background:var(--blue-pale);border:1.5px solid #90CAF9}
+.ped-node.dam{background:var(--pink-pale);border:1.5px solid #F48FB1}
+.ped-node.sire-sire{background:#E8EAF6;border:1px solid #9FA8DA}
+.ped-node.sire-dam{background:#E8F5E9;border:1px solid #A5D6A7}
+.ped-node.dam-sire{background:#FFF8E1;border:1px solid #FFE082}
+.ped-node.dam-dam{background:#FBE9E7;border:1px solid #FFAB91}
+.ped-node.g3{background:#F5F5F5;border:1px solid #E0E0E0}
+.ped-node.unknown{background:#FAFAFA;border:1px dashed #BDBDBD;opacity:.7}
+.ped-gen-label{font-size:9px;text-transform:uppercase;letter-spacing:.4px;opacity:.7;margin-bottom:2px}
+.ped-id{font-size:12px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ped-sub{font-size:10px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.ped-sex{font-size:10px;font-weight:bold}
+.ped-sex.m{color:var(--blue)}
+.ped-sex.f{color:var(--pink)}
+.ped-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.ped-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);font-family:sans-serif}
+.ped-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* RECORDS */
+.record-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.rtab{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:sans-serif}
+.rtab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.form-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.form-section h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;font-family:sans-serif}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-family:sans-serif}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;color:var(--text);font-family:sans-serif}
+.form-row textarea{min-height:72px;resize:vertical}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.saved-toast{background:#D8F3DC;color:var(--green);padding:10px 14px;border-radius:8px;font-size:13px;text-align:center;margin-bottom:12px;display:none;font-family:sans-serif}
+.error-toast{background:#FFCDD2;color:#C62828;padding:10px 14px;border-radius:8px;font-size:13px;text-align:center;margin-bottom:12px;display:none;font-family:sans-serif}
+.auto-dates{background:var(--green-pale);border-radius:8px;padding:10px;font-size:12px;color:var(--green);margin-bottom:14px;font-family:sans-serif;line-height:1.8}
+
+/* ALERTS */
+.alerts-box{background:#FFF3CD;border:1px solid var(--amber);border-radius:var(--radius);padding:14px;margin-bottom:20px}
+.alerts-title{font-size:13px;font-weight:bold;color:#856404;margin-bottom:10px;font-family:sans-serif}
+.alert-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(133,100,4,.15)}
+.alert-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.alert-dot{width:8px;height:8px;border-radius:50%;background:var(--amber-dark);margin-top:4px;flex-shrink:0}
+.alert-dot.urgent{background:var(--red)}
+.alert-text{font-size:13px;color:#533;line-height:1.4;font-family:sans-serif}
+.alert-tag{font-size:10px;background:var(--amber);color:#533;padding:2px 6px;border-radius:10px;margin-left:4px;font-family:sans-serif}
+.alert-tag.urgent{background:#FFCDD2;color:#C62828}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-num{font-size:28px;font-weight:bold;color:var(--green)}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;font-family:sans-serif}
+
+/* SALES */
+.forsale-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer}
+.forsale-top{display:flex;justify-content:space-between;align-items:flex-start}
+.forsale-name{font-size:16px;font-weight:bold}
+.forsale-price{font-size:18px;font-weight:bold;color:var(--green)}
+.forsale-meta{font-size:12px;color:var(--muted);margin-top:4px;font-family:sans-serif}
+.forsale-badge{display:inline-block;background:var(--green-pale);color:var(--green);font-size:10px;padding:2px 8px;border-radius:10px;margin-top:6px;font-family:sans-serif}
+.sale-header{background:linear-gradient(135deg,var(--green),#1B4332);color:#fff;border-radius:var(--radius);padding:24px;margin-bottom:16px;text-align:center}
+.contact-btn{background:#fff;color:var(--green);border:none;width:100%;padding:13px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;font-family:sans-serif}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);font-family:sans-serif;font-size:14px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ADD RABBIT FORM */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;overflow-y:auto;padding:20px}
+.modal-overlay.active{display:block}
+.modal-card{background:#fff;border-radius:var(--radius);padding:20px;max-width:440px;margin:0 auto}
+.modal-card h3{font-size:16px;margin-bottom:20px;font-family:sans-serif}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0;cursor:pointer;color:var(--muted);font-size:10px;gap:3px;border:none;background:none;font-family:sans-serif}
+.nav-item.active{color:var(--green)}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.history-item{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--green-light);font-family:sans-serif}
+.history-date{font-size:11px;color:var(--muted)}
+.history-text{font-size:13px;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div style="font-size:56px;margin-bottom:10px">🐰</div>
+  <div style="font-size:24px;font-weight:bold;color:#fff;margin-bottom:4px">S&D Rabbitry</div>
+  <div style="color:rgba(255,255,255,.7);font-size:13px;margin-bottom:36px;font-family:sans-serif">Pedigree & Farm Management</div>
+  <div class="login-card">
+    <h3 style="font-size:16px;margin-bottom:20px;font-family:sans-serif">Iniciar sesión / Sign in</h3>
+    <div class="field">
+      <label>Usuario / User</label>
+      <select id="login-user">
+        <option value="">Select role...</option>
+        <option value="admin">Admin (Full access)</option>
+        <option value="employee">Empleado / Employee</option>
+        <option value="public">Público / Buyer</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Contraseña / Password</label>
+      <div class="pass-wrap">
+        <input type="password" id="login-pass" placeholder="••••••••">
+        <button class="pass-eye" onclick="togglePass()" type="button">
+          <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Entrar / Login</button>
+    <div id="login-hint" style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;font-family:sans-serif"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+      <a href="#" onclick="goPublic()" style="font-size:13px;color:var(--green);font-family:sans-serif;text-decoration:none">Ver conejos en venta / View for sale →</a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none">
+  <div class="topbar">
+    <div><div class="topbar-title">🐰 S&D Rabbitry</div><div class="topbar-sub" id="topbar-role"></div></div>
+    <div class="topbar-right">
+      <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">ES</button>
+      <div class="topbar-avatar" onclick="doLogout()" id="user-avatar" title="Cerrar sesión">↩</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active" style="padding:16px">
+    <div style="font-size:20px;font-weight:bold;margin-bottom:4px" id="greeting">Buenos días 👋</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;font-family:sans-serif" id="date-str"></div>
+    <div id="alerts-container"></div>
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="spinner" style="width:20px;height:20px;margin:4px auto"></div></div>
+      <div class="stat-card"><div class="spinner" style="width:20px;height:20px;margin:4px auto"></div></div>
+      <div class="stat-card"><div class="spinner" style="width:20px;height:20px;margin:4px auto"></div></div>
+      <div class="stat-card"><div class="spinner" style="width:20px;height:20px;margin:4px auto"></div></div>
+    </div>
+    <div class="section-title" id="recent-title">CONEJOS RECIENTES</div>
+    <div id="home-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="screen-search" class="screen" style="padding:16px">
+    <div class="section-title">BUSCAR CONEJOS</div>
+    <div class="search-wrap">
+      <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input type="text" placeholder="ID, nombre, raza, color..." oninput="filterRabbits(this.value)" id="search-input">
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
+      <button class="filter-btn" onclick="setFilter('buck',this)">♂ Machos</button>
+      <button class="filter-btn" onclick="setFilter('doe',this)">♀ Hembras</button>
+      <button class="filter-btn" onclick="setFilter('New Zealand',this)">New Zealand</button>
+      <button class="filter-btn" onclick="setFilter('Mini Rex',this)">Mini Rex</button>
+      <button class="filter-btn" onclick="setFilter('Lionhead',this)">Lionhead</button>
+    </div>
+    <div id="search-results"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="screen-detail" class="screen" style="padding:16px">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver / Back
+    </button>
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- RECORDS -->
+  <div id="screen-records" class="screen" style="padding:16px">
+    <div class="section-title">REGISTRAR EVENTO</div>
+    <div class="record-tabs">
+      <div class="rtab active" onclick="switchTab('monta',this)">🤝 Monta</div>
+      <div class="rtab" onclick="switchTab('palpacion',this)">🖐 Palpación</div>
+      <div class="rtab" onclick="switchTab('nido',this)">🪺 Nido</div>
+      <div class="rtab" onclick="switchTab('parto',this)">🐣 Parto</div>
+      <div class="rtab" onclick="switchTab('destete',this)">📦 Destete</div>
+    </div>
+    <div id="saved-toast" class="saved-toast">✅ Registro guardado / Record saved</div>
+    <div id="error-toast" class="error-toast">❌ Error al guardar. Intenta de nuevo.</div>
+    <div id="record-form-content"></div>
+  </div>
+
+  <!-- SALES PUBLIC -->
+  <div id="screen-sales" class="screen" style="padding:16px">
+    <div class="section-title">EN VENTA / FOR SALE</div>
+    <div id="sales-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+  </div>
+
+  <!-- ADD RABBIT MODAL -->
+  <div class="modal-overlay" id="add-rabbit-modal">
+    <div class="modal-card">
+      <h3>➕ Agregar Conejo / Add Rabbit</h3>
+      <div id="add-rabbit-form"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="goTo('home')" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </button>
+    <button class="nav-item" onclick="goTo('search')" id="nav-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscar
+    </button>
+    <button class="nav-item" onclick="goTo('records')" id="nav-records">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Registrar
+    </button>
+    <button class="nav-item" onclick="goTo('sales')" id="nav-sales">
+      <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Venta
+    </button>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+var SUPA_URL='https://ajwkorwriojgbthwwkfg.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqd2tvcndyaW9qZ2J0aHd3a2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NzMwNDQsImV4cCI6MjA5NjI0OTA0NH0.JfjESvRxhoLyDqidzb_UHvSvEWmOXZYTTmFgLA4wgs4';
+
+// Passwords - admin can change these
+var PASSWORDS={admin:'admin123',employee:'farm2026'};
+
+var lang='es', currentUser=null, prevScreen='home', activeFilter='all';
+var allRabbits=[], breedingRecords=[];
+
+// ── SUPABASE API ─────────────────────────────────────────
+async function sbFetch(path,opts){
+  var res=await fetch(SUPA_URL+'/rest/v1/'+path,Object.assign({
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'}
+  },opts));
+  if(!res.ok){var e=await res.text();throw new Error(e);}
+  var txt=await res.text();
+  return txt?JSON.parse(txt):[];
+}
+
+async function getRabbits(){
+  return sbFetch('rabbits?select=*&order=dob.desc');
+}
+async function getBreedingRecords(){
+  return sbFetch('breeding_records?select=*&order=created_at.desc');
+}
+async function insertRabbit(r){
+  return sbFetch('rabbits',{method:'POST',body:JSON.stringify(r)});
+}
+async function updateRabbit(id,data){
+  return sbFetch('rabbits?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(data)});
+}
+async function insertRecord(r){
+  return sbFetch('breeding_records',{method:'POST',body:JSON.stringify(r)});
+}
+
+// ── UTILS ────────────────────────────────────────────────
+function lookup(id){return allRabbits.find(function(r){return r.id===id;})||null;}
+
+function calcAge(dob){
+  if(!dob||dob==='-'||dob==='') return '-';
+  var p=dob.split('/');
+  var d;
+  if(p.length===3) d=new Date(p[2],p[0]-1,p[1]);
+  else d=new Date(dob);
+  if(isNaN(d)) return dob;
+  var diff=Math.floor((new Date()-d)/86400000);
+  if(diff<0) return '-';
+  if(diff<30) return diff+' días';
+  if(diff<365) return Math.floor(diff/30)+' meses';
+  return (diff/365).toFixed(1)+' años';
+}
+
+function addDays(dateStr,n){
+  var d=new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+n);
+  return d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+// ── AUTH ─────────────────────────────────────────────────
+function togglePass(){
+  var inp=document.getElementById('login-pass');
+  var icon=document.getElementById('eye-icon');
+  if(inp.type==='password'){
+    inp.type='text';
+    icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type='password';
+    icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+function doLogin(){
+  var role=document.getElementById('login-user').value;
+  var pass=document.getElementById('login-pass').value;
+  var hint=document.getElementById('login-hint');
+  if(!role){hint.textContent='Selecciona un rol / Select a role';return;}
+  if(role==='public'){goPublic();return;}
+  if(role==='admin'&&pass!==PASSWORDS.admin){hint.textContent='Contraseña incorrecta / Wrong password';return;}
+  if(role==='employee'&&pass!==PASSWORDS.employee){hint.textContent='Contraseña incorrecta / Wrong password';return;}
+  startApp(role);
+}
+
+function goPublic(){
+  startApp('public');
+}
+
+function startApp(role){
+  currentUser=role;
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  var d=new Date();
+  document.getElementById('date-str').textContent=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  var h=d.getHours();
+  document.getElementById('greeting').textContent=(h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches')+' 👋';
+  var labels={admin:'Admin — Acceso total',employee:'Empleado — Solo registro',public:'Público / Buyer'};
+  document.getElementById('topbar-role').textContent=labels[role]||role;
+  document.getElementById('user-avatar').textContent=role==='public'?'↩':'↩';
+  if(role==='public'){
+    document.getElementById('nav-records').style.display='none';
+    goTo('sales');
+  } else {
+    document.getElementById('nav-records').style.display='flex';
+    goTo('home');
+  }
+  loadAllData();
+}
+
+function doLogout(){
+  currentUser=null;
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-pass').type='password';
+  document.getElementById('eye-icon').innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+function toggleLang(){lang=lang==='es'?'en':'es';document.getElementById('lang-btn').textContent=lang==='es'?'ES':'EN';}
+
+// ── NAVIGATION ───────────────────────────────────────────
+function goTo(s){
+  document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('active');});
+  document.getElementById('screen-'+s).classList.add('active');
+  var n=document.getElementById('nav-'+s);
+  if(n) n.classList.add('active');
+}
+function goBack(){goTo(prevScreen==='detail'?'home':prevScreen);}
+
+// ── DATA LOADING ─────────────────────────────────────────
+async function loadAllData(){
+  try{
+    allRabbits=await getRabbits();
+    breedingRecords=await getBreedingRecords();
+    renderHome();
+    renderSearchResults('');
+    renderSales();
+    renderRecordForm('monta','');
+    renderAlerts();
+  } catch(e){
+    // If tables empty, load from Excel data
+    if(allRabbits.length===0){
+      await seedInitialData();
+      allRabbits=await getRabbits();
+      breedingRecords=await getBreedingRecords();
+      renderHome();
+      renderSearchResults('');
+      renderSales();
+      renderRecordForm('monta','');
+    }
+  }
+}
+
+// ── SEED DATA FROM EXCEL ──────────────────────────────────
+async function seedInitialData(){
+  var SEED=[
+    {id:'8HP',name:'8HP',sex:'M',color:'Broken Blue',dob:'03/15/2026',breed:'Mini Rex',weight:'-',sire_id:'Jif',dam_id:'JM5',status:'Active',price:null,for_sale:false},
+    {id:'BAR',name:'BAR',sex:'M',color:'Broken Black',dob:'03/01/2026',breed:'New Zealand',weight:'-',sire_id:'Bartender',dam_id:'Wanna Be',status:'Active',price:225,for_sale:true},
+    {id:'MESI',name:'MESI',sex:'M',color:'White',dob:'02/10/2026',breed:'New Zealand',weight:'-',sire_id:'553',dam_id:'Lucia',status:'Active',price:null,for_sale:false},
+    {id:'JR26',name:'JR26',sex:'M',color:'White',dob:'02/10/2026',breed:'New Zealand',weight:'-',sire_id:'Jury',dam_id:'558',status:'Active',price:null,for_sale:false},
+    {id:'Jif',name:"Adeleke's Jif",sex:'M',color:'Broken Black',dob:'08/03/2025',breed:'Mini Rex',weight:'-',sire_id:'ML1476',dam_id:'JM1',status:'Active',price:null,for_sale:false},
+    {id:'553',name:"Mitchell's 553",sex:'M',color:'White',dob:'05/30/2025',breed:'New Zealand',weight:'6 lbs',sire_id:'643',dam_id:'7D32',status:'Active',price:null,for_sale:false},
+    {id:'Bartender',name:"D&D's Bartender",sex:'M',color:'Broken Black',dob:'10/27/2024',breed:'New Zealand',weight:'10.5 lbs',sire_id:'Guilty As Sin',dam_id:'Smojo',status:'Active',price:null,for_sale:false},
+    {id:'BLAB',name:'BLAB',sex:'M',color:'-',dob:'',breed:'-',weight:'-',sire_id:'',dam_id:'',status:'Active',price:null,for_sale:false},
+    {id:'ZU',name:'ZU',sex:'F',color:'Broken Black',dob:'03/15/2026',breed:'Mini Rex',weight:'-',sire_id:'Jif',dam_id:'JM5',status:'Active',price:null,for_sale:false},
+    {id:'38',name:'S&D 38',sex:'F',color:'Black',dob:'03/15/2026',breed:'Mini Rex',weight:'-',sire_id:'Thomas',dam_id:'RS25',status:'Active',price:null,for_sale:false},
+    {id:'ALI',name:'ALI',sex:'F',color:'Broken Black',dob:'03/01/2026',breed:'New Zealand',weight:'-',sire_id:'Bartender',dam_id:'Wanna Be',status:'Active',price:200,for_sale:true},
+    {id:'LUZ',name:'LUZ',sex:'F',color:'Black',dob:'03/01/2026',breed:'New Zealand',weight:'-',sire_id:'Bartender',dam_id:'Wanna Be',status:'Active',price:null,for_sale:false},
+    {id:'VERO',name:'VERO',sex:'F',color:'White',dob:'02/10/2026',breed:'New Zealand',weight:'-',sire_id:'553',dam_id:'Lucia',status:'Active',price:150,for_sale:true},
+    {id:'ZOE',name:'S&D ZOE',sex:'F',color:'White',dob:'02/10/2026',breed:'New Zealand',weight:'-',sire_id:'Jury',dam_id:'558',status:'Active',price:175,for_sale:true},
+    {id:'MIA',name:'MIA',sex:'F',color:'White',dob:'02/06/2026',breed:'New Zealand',weight:'-',sire_id:'MOH4',dam_id:'X12',status:'Active',price:null,for_sale:false},
+    {id:'OM2',name:'OM2',sex:'F',color:'White',dob:'08/07/2025',breed:'New Zealand',weight:'-',sire_id:'MOH4',dam_id:'SDGJ2',status:'Active',price:null,for_sale:false},
+    {id:'RS25',name:'S&D RS25',sex:'F',color:'Black',dob:'07/14/2025',breed:'Mini Rex',weight:'-',sire_id:'Loui',dam_id:'Delaney',status:'Active',price:null,for_sale:false},
+    {id:'S25',name:'S&D S25',sex:'F',color:'Broken Black',dob:'07/14/2025',breed:'Mini Rex',weight:'-',sire_id:'Loui',dam_id:'Delaney',status:'Active',price:null,for_sale:false},
+    {id:'Lucia',name:"Mitchell's Lucia",sex:'F',color:'White',dob:'05/31/2025',breed:'New Zealand',weight:'7 lbs',sire_id:'5C7',dam_id:'842',status:'Active',price:null,for_sale:false},
+    {id:'558',name:"Mitchell's 558",sex:'F',color:'White',dob:'05/30/2025',breed:'New Zealand',weight:'5 lbs 7 oz',sire_id:'643',dam_id:'8ZM4',status:'Active',price:null,for_sale:false},
+    {id:'Wanna Be',name:"Dawson's Wanna Be",sex:'F',color:'Broken Black',dob:'05/29/2025',breed:'New Zealand',weight:'11 lbs',sire_id:'Hurricane',dam_id:'Spirit',status:'Active',price:null,for_sale:false},
+    {id:'X12',name:'X12',sex:'F',color:'White',dob:'04/21/2025',breed:'New Zealand',weight:'-',sire_id:'X417',dam_id:'SDJ12',status:'Active',price:null,for_sale:false},
+    {id:'JM5',name:'SR JM5',sex:'F',color:'Broken Otter - Black',dob:'02/05/2025',breed:'Mini Rex',weight:'-',sire_id:'MR1',dam_id:'CL1',status:'Active',price:null,for_sale:false},
+    {id:'TD',name:"Gracelyn's TD",sex:'F',color:'Tort. - Black',dob:'01/24/2025',breed:'Lionhead',weight:'-',sire_id:'WIW',dam_id:'PIE',status:'Active',price:null,for_sale:false},
+    {id:'RD2',name:"Gracelyn's RD2",sex:'F',color:'Ruby-Eyed White',dob:'01/24/2025',breed:'Lionhead',weight:'-',sire_id:'WIW',dam_id:'PIE',status:'Active',price:null,for_sale:false},
+    // Ancestors
+    {id:'Guilty As Sin',name:"D&D's Guilty As Sin",sex:'M',color:'Broken Black',dob:'04/23/2024',breed:'New Zealand',weight:'11 lbs',sire_id:'Bocifus',dam_id:'Lover',status:'Archive',price:null,for_sale:false},
+    {id:'Smojo',name:"D&D's Smojo",sex:'F',color:'Broken Blue',dob:'01/24/2024',breed:'New Zealand',weight:'-',sire_id:'Mirror',dam_id:'Jedi',status:'Archive',price:null,for_sale:false},
+    {id:'Bocifus',name:"Hill's Bocifus",sex:'M',color:'Broken Black',dob:'04/10/2023',breed:'New Zealand',weight:'10 lbs',sire_id:'P7',dam_id:'L52',status:'Archive',price:null,for_sale:false},
+    {id:'Lover',name:"D&D's Lover",sex:'F',color:'Black',dob:'04/03/2023',breed:'New Zealand',weight:'11 lbs',sire_id:'Mirror',dam_id:'Hallow',status:'Archive',price:null,for_sale:false},
+    {id:'Mirror',name:"D&D's Mirror",sex:'M',color:'Broken Black',dob:'08/27/2022',breed:'New Zealand',weight:'10 lbs',sire_id:'Lucifer',dam_id:'Broken Black Doe',status:'Archive',price:null,for_sale:false},
+    {id:'Jedi',name:"D&D's Jedi",sex:'F',color:'Blue',dob:'08/29/2022',breed:'New Zealand',weight:'11 lbs',sire_id:'Darth',dam_id:'Khalida',status:'Archive',price:null,for_sale:false},
+    {id:'643',name:"Mitchell's Zephyr",sex:'M',color:'White',dob:'06/01/2024',breed:'New Zealand',weight:'9 lbs 14 oz',sire_id:'MC1',dam_id:'4C4',status:'Archive',price:null,for_sale:false},
+    {id:'7D32',name:"Mitchell's 7D32",sex:'F',color:'White',dob:'07/25/2023',breed:'New Zealand',weight:'11 lbs 11 oz',sire_id:'16',dam_id:'6DL2',status:'Archive',price:null,for_sale:false},
+    {id:'MC1',name:"Mitchell's Zeus",sex:'M',color:'White',dob:'05/25/2022',breed:'New Zealand',weight:'11 lbs 10 oz',sire_id:'4ZL01',dam_id:'NC1B',status:'Archive',price:null,for_sale:false},
+    {id:'4C4',name:"Mitchell's 4C4",sex:'F',color:'White',dob:'04/12/2023',breed:'New Zealand',weight:'11 lbs 6 oz',sire_id:'16',dam_id:'MO1',status:'Archive',price:null,for_sale:false},
+    {id:'ML1476',name:"Minnow Lake's Wildcat",sex:'M',color:'Broken Black',dob:'05/28/2024',breed:'Mini Rex',weight:'-',sire_id:'MAFIA',dam_id:'ROULETTE',status:'Archive',price:null,for_sale:false},
+    {id:'JM1',name:'SR Jamaica',sex:'F',color:'Black',dob:'02/05/2025',breed:'Mini Rex',weight:'-',sire_id:'MR1',dam_id:'CL1',status:'Archive',price:null,for_sale:false},
+    {id:'MAFIA',name:"Minnow Lake's Mafia",sex:'M',color:'Broken Black',dob:'05/01/2022',breed:'Mini Rex',weight:'3.12 lbs',sire_id:'MLJ11',dam_id:'LADEDA',status:'Archive',price:null,for_sale:false},
+    {id:'ROULETTE',name:"BB's Roulette",sex:'F',color:'Black',dob:'11/08/2022',breed:'Mini Rex',weight:'3.12 lbs',sire_id:'TRIPP',dam_id:'CASINO',status:'Archive',price:null,for_sale:false},
+    {id:'5C7',name:"Mitchell's Zamboni",sex:'M',color:'White',dob:'06/06/2023',breed:'New Zealand',weight:'10 lbs 12 oz',sire_id:'4ZL01',dam_id:'MAC922',status:'Archive',price:null,for_sale:false},
+    {id:'842',name:"Mitchell's 842",sex:'F',color:'White',dob:'08/17/2024',breed:'New Zealand',weight:'10 lbs',sire_id:'4O2',dam_id:'5W2',status:'Archive',price:null,for_sale:false},
+    {id:'8ZM4',name:"Mitchell's 8ZM4",sex:'F',color:'White',dob:'08/18/2024',breed:'New Zealand',weight:'10 lbs',sire_id:'5C7',dam_id:'M237',status:'Archive',price:null,for_sale:false},
+    {id:'Hurricane',name:"D&D's GC Hurricane",sex:'M',color:'Broken Black',dob:'04/23/2024',breed:'New Zealand',weight:'10.5 lbs',sire_id:'Bocifus',dam_id:'Lover',status:'Archive',price:null,for_sale:false},
+    {id:'Spirit',name:"D&D's Spirit",sex:'F',color:'Black',dob:'12/22/2021',breed:'New Zealand',weight:'11 lbs',sire_id:'TB15',dam_id:'8C21',status:'Archive',price:null,for_sale:false},
+    {id:'WIW',name:'Autumn Breeze Winds of Winter',sex:'M',color:'Sable Point',dob:'07/23/2023',breed:'Lionhead',weight:'2 lb 8 oz',sire_id:'',dam_id:'',status:'Archive',price:null,for_sale:false},
+    {id:'PIE',name:'Autumn Breeze Miss American Pie',sex:'F',color:'Tort. - Blue',dob:'',breed:'Lionhead',weight:'-',sire_id:'',dam_id:'',status:'Archive',price:null,for_sale:false},
+    {id:'Jury',name:"Adeleke's Jury",sex:'M',color:'White',dob:'05/27/2025',breed:'New Zealand',weight:'-',sire_id:'GC',dam_id:'Juju',status:'Archive',price:null,for_sale:false},
+    {id:'GC',name:"Mangione's GC",sex:'M',color:'White',dob:'05/02/2024',breed:'New Zealand',weight:'-',sire_id:'24',dam_id:'GQ',status:'Archive',price:null,for_sale:false},
+    {id:'Juju',name:"Adeleke's Juju",sex:'F',color:'White',dob:'04/19/2024',breed:'New Zealand',weight:'-',sire_id:'SZ5',dam_id:'GZ2',status:'Archive',price:null,for_sale:false},
+  ];
+  try{ await sbFetch('rabbits',{method:'POST',body:JSON.stringify(SEED)}); } catch(e){}
+}
+
+// ── ALERTS ───────────────────────────────────────────────
+function renderAlerts(){
+  var today=new Date();
+  var alerts=[];
+  breedingRecords.forEach(function(rec){
+    if(!rec.breeding_date) return;
+    var bd=new Date(rec.breeding_date+'T00:00:00');
+    if(isNaN(bd)) return;
+    var palpDay=new Date(bd); palpDay.setDate(palpDay.getDate()+15);
+    var nestDay=new Date(bd); nestDay.setDate(nestDay.getDate()+25);
+    var diff=Math.floor((palpDay-today)/86400000);
+    var ndiff=Math.floor((nestDay-today)/86400000);
+    if(diff>=0&&diff<=3&&!rec.pregnant){
+      alerts.push({text:rec.doe_id+' — <strong>Palpar</strong> '+(diff===0?'HOY':'en '+diff+' día(s)'),urgent:diff===0,tag:diff===0?'URGENTE':'Palpación'});
+    }
+    if(ndiff>=0&&ndiff<=3&&rec.pregnant){
+      alerts.push({text:rec.doe_id+' — <strong>Poner nido</strong> '+(ndiff===0?'HOY':'en '+ndiff+' día(s)'),urgent:ndiff===0,tag:'Nido'});
+    }
+  });
+  if(alerts.length===0) return;
+  var html='<div class="alerts-box"><div class="alerts-title">⚠️ Alertas de hoy</div>';
+  alerts.forEach(function(a){
+    html+='<div class="alert-item"><div class="alert-dot'+(a.urgent?' urgent':'')+'"></div><div class="alert-text">'+a.text+'<span class="alert-tag'+(a.urgent?' urgent':'')+'">'+a.tag+'</span></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('alerts-container').innerHTML=html;
+}
+
+// ── HOME ─────────────────────────────────────────────────
+function renderHome(){
+  var active=allRabbits.filter(function(r){return r.status==='Active';});
+  var bucks=active.filter(function(r){return r.sex==='M';});
+  var does=active.filter(function(r){return r.sex==='F';});
+  var forSale=allRabbits.filter(function(r){return r.for_sale;});
+  document.getElementById('stats-grid').innerHTML=
+    '<div class="stat-card"><div class="stat-num">'+bucks.length+'</div><div class="stat-label">Machos activos</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+does.length+'</div><div class="stat-label">Hembras activas</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+breedingRecords.length+'</div><div class="stat-label">Registros</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+forSale.length+'</div><div class="stat-label">En venta</div></div>';
+  var recent=active.slice(0,6);
+  var html='';
+  if(currentUser==='admin'){
+    html+='<button class="btn-save" style="margin-bottom:14px" onclick="showAddRabbit()">➕ Agregar conejo / Add rabbit</button>';
+  }
+  recent.forEach(function(r){html+=rabbitCardHTML(r);});
+  document.getElementById('home-list').innerHTML=html;
+}
+
+function rabbitCardHTML(r){
+  var isSale=r.for_sale?'<span class="rabbit-status status-sale">💰 Venta</span>':'<span class="rabbit-status status-active">Activo</span>';
+  return '<div class="rabbit-card" onclick="openRabbit(\''+esc(r.id)+'\')">'+
+    '<div class="rabbit-avatar '+(r.sex==='M'?'buck':'doe')+'">'+(r.sex==='M'?'♂':'♀')+'</div>'+
+    '<div class="rabbit-info"><div class="rabbit-name">'+r.id+'</div>'+
+    '<div class="rabbit-meta">'+r.breed+' · '+r.color+'</div></div>'+
+    isSale+'</div>';
+}
+
+// ── SEARCH ───────────────────────────────────────────────
+function filterRabbits(q){renderSearchResults(q);}
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  renderSearchResults(document.getElementById('search-input').value);
+}
+
+function renderSearchResults(q){
+  var res=allRabbits.filter(function(r){
+    if(r.status!=='Active') return false;
+    var mq=!q||r.id.toLowerCase().includes(q.toLowerCase())||r.name.toLowerCase().includes(q.toLowerCase())||(r.breed||'').toLowerCase().includes(q.toLowerCase())||(r.color||'').toLowerCase().includes(q.toLowerCase());
+    var mf=activeFilter==='all'||(activeFilter==='buck'&&r.sex==='M')||(activeFilter==='doe'&&r.sex==='F')||r.breed===activeFilter;
+    return mq&&mf;
+  });
+  var html='';
+  res.forEach(function(r){html+=rabbitCardHTML(r);});
+  document.getElementById('search-results').innerHTML=html||'<p style="color:var(--muted);text-align:center;padding:20px;font-family:sans-serif">Sin resultados</p>';
+}
+
+// ── PEDIGREE ─────────────────────────────────────────────
+function pedNode(id,cls,genLabel){
+  var r=lookup(id);
+  if(!id||id===''||id==='-'||!r){
+    return '<div class="ped-node unknown" style="min-height:44px"><div class="ped-gen-label">'+genLabel+'</div><div class="ped-id" style="color:#aaa">'+(id&&id!=='-'&&id!==''?id:'?')+'</div></div>';
+  }
+  return '<div class="ped-node '+cls+'" onclick="openRabbit(\''+esc(id)+'\')" style="cursor:pointer">'+
+    '<div class="ped-gen-label">'+genLabel+'</div>'+
+    '<div class="ped-id">'+id+'</div>'+
+    '<div class="ped-sub">'+(r.color||'-')+'</div>'+
+    '<div class="ped-sex '+(r.sex==='M'?'m':'f')+'">'+(r.sex==='M'?'♂':'♀')+' '+(r.breed||'').replace('New Zealand','NZ').replace('Mini Rex','MR').replace('Lionhead','LH')+'</div>'+
+  '</div>';
+}
+
+function buildPedigreeHTML(rabbit){
+  var s=rabbit.sire_id||'',d=rabbit.dam_id||'';
+  var sr=lookup(s),dr=lookup(d);
+  var ss=sr?sr.sire_id||'':'',sd=sr?sr.dam_id||'':'';
+  var ds=dr?dr.sire_id||'':'',dd=dr?dr.dam_id||'':'';
+  var ssr=lookup(ss),sdr=lookup(sd),dsr=lookup(ds),ddr=lookup(dd);
+  var sss=ssr?ssr.sire_id||'':'',ssd=ssr?ssr.dam_id||'':'';
+  var sds=sdr?sdr.sire_id||'':'',sdd=sdr?sdr.dam_id||'':'';
+  var dss=dsr?dsr.sire_id||'':'',dsd=dsr?dsr.dam_id||'':'';
+  var dds=ddr?ddr.sire_id||'':'',ddd=ddr?ddr.dam_id||'':'';
+  var t=lang==='es';
+  var html='<div class="ped-tree"><h4>🌳 Pedigree — 3 '+(t?'Generaciones':'Generations')+'</h4><div style="display:flex;gap:5px;align-items:stretch">';
+  html+='<div style="display:flex;flex-direction:column;gap:5px;flex:1">';
+  html+=pedNode(sss,'g3',t?'Bis.P':'GGS-P');html+=pedNode(ssd,'g3',t?'Bis.P':'GGD-P');
+  html+=pedNode(sds,'g3',t?'Bis.P':'GGS-P');html+=pedNode(sdd,'g3',t?'Bis.P':'GGD-P');
+  html+=pedNode(dss,'g3',t?'Bis.M':'GGS-M');html+=pedNode(dsd,'g3',t?'Bis.M':'GGD-M');
+  html+=pedNode(dds,'g3',t?'Bis.M':'GGS-M');html+=pedNode(ddd,'g3',t?'Bis.M':'GGD-M');
+  html+='</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:5px;flex:1">';
+  [[ss,'sire-sire',t?'Ab.P':'PGS'],[sd,'sire-dam',t?'Ab.P':'PGD'],[ds,'dam-sire',t?'Ab.M':'MGS'],[dd,'dam-dam',t?'Ab.M':'MGD']].forEach(function(x){
+    html+='<div style="flex:1;display:flex;align-items:center">'+pedNode(x[0],x[1],x[2])+'</div>';
+  });
+  html+='</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:5px;flex:1">';
+  html+='<div style="flex:1;display:flex;align-items:center">'+pedNode(s,'sire',t?'Padre':'Sire')+'</div>';
+  html+='<div style="flex:1;display:flex;align-items:center">'+pedNode(d,'dam',t?'Madre':'Dam')+'</div>';
+  html+='</div>';
+  html+='<div style="display:flex;align-items:center;flex:.9"><div class="ped-node gen1" style="width:100%"><div class="ped-gen-label" style="color:rgba(255,255,255,.7)">'+(t?'Este':'This')+'</div><div class="ped-id" style="font-size:13px;color:#fff">'+rabbit.id+'</div><div class="ped-sub" style="color:rgba(255,255,255,.8)">'+(rabbit.color||'')+'</div></div></div>';
+  html+='</div>';
+  html+='<div class="ped-legend"><div class="ped-leg-item"><div class="ped-leg-dot" style="background:#90CAF9"></div><span>Padre</span></div><div class="ped-leg-item"><div class="ped-leg-dot" style="background:#F48FB1"></div><span>Madre</span></div><div class="ped-leg-item"><div class="ped-leg-dot" style="background:#E8EAF6"></div><span>Ab.Pat.</span></div><div class="ped-leg-item"><div class="ped-leg-dot" style="background:#FFF8E1"></div><span>Ab.Mat.</span></div><div class="ped-leg-item"><div class="ped-leg-dot" style="background:#F5F5F5"></div><span>Bisabuelos</span></div></div>';
+  html+='</div>';
+  return html;
+}
+
+// ── RABBIT DETAIL ────────────────────────────────────────
+function openRabbit(id){
+  var r=lookup(id);
+  if(!r){r=allRabbits.find(function(x){return x.id===id;});}
+  if(!r) return;
+  prevScreen=currentUser==='public'?'sales':'home';
+  var isAdmin=currentUser==='admin', isEmp=currentUser==='employee';
+  var html='<div class="detail-header"><div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+    '<div><div class="detail-name">'+r.id+'</div><div class="detail-fullname">'+r.name+'</div></div>'+
+    '<div style="font-size:32px">'+(r.sex==='M'?'♂':'♀')+'</div></div>'+
+    '<div class="detail-chips"><span class="chip">'+(r.breed||'-')+'</span><span class="chip">'+(r.color||'-')+'</span><span class="chip">'+calcAge(r.dob)+'</span><span class="chip">'+r.status+'</span>'+
+    (r.for_sale?'<span class="chip" style="background:rgba(255,220,50,.4)">💰 $'+(r.price||'?')+'</span>':'')+'</div></div>';
+
+  html+='<div class="info-card"><h4>'+(lang==='es'?'Información':'Information')+'</h4>'+
+    '<div class="info-row"><span class="info-key">ID</span><span class="info-val">'+r.id+'</span></div>'+
+    '<div class="info-row"><span class="info-key">DOB</span><span class="info-val">'+(r.dob||'-')+'</span></div>'+
+    '<div class="info-row"><span class="info-key">'+(lang==='es'?'Raza':'Breed')+'</span><span class="info-val">'+(r.breed||'-')+'</span></div>'+
+    '<div class="info-row"><span class="info-key">Color</span><span class="info-val">'+(r.color||'-')+'</span></div>'+
+    '<div class="info-row"><span class="info-key">'+(lang==='es'?'Peso':'Weight')+'</span><span class="info-val">'+(r.weight||'-')+'</span></div>'+
+    '</div>';
+
+  html+=buildPedigreeHTML(r);
+
+  // Records for this rabbit
+  var recs=breedingRecords.filter(function(rec){return rec.doe_id===r.id||rec.buck_id===r.id;});
+  if(recs.length>0){
+    html+='<div class="info-card"><h4>'+(lang==='es'?'Historial':'History')+'</h4>';
+    recs.slice(0,5).forEach(function(rec){
+      html+='<div class="history-item"><div class="history-date">'+rec.breeding_date+' — '+(rec.buck_id?'Monta con '+rec.buck_id:'')+'</div>'+
+        '<div class="history-text">'+(rec.born_alive!==null&&rec.born_alive!==undefined?'Vivos: '+rec.born_alive+' ':'')+(rec.notes||'')+'</div></div>';
+    });
+    html+='</div>';
+  }
+
+  // QR section
+  html+='<div class="info-card"><h4>QR</h4><div style="text-align:center;padding:8px 0">'+
+    '<div style="width:100px;height:100px;margin:0 auto 10px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:36px">📱</div>'+
+    '<div style="font-size:11px;color:var(--muted);word-break:break-all">sdrabbitry.com/pedigree/'+r.id+'</div>'+
+    (isAdmin?'<br><button class="btn-outline" onclick="alert(\'QR listo para imprimir: '+r.id+'\')">🖨 Imprimir QR</button>':'')+'</div></div>';
+
+  // Admin: for sale toggle
+  if(isAdmin){
+    html+='<div class="info-card"><h4>'+(lang==='es'?'Venta':'For Sale')+'</h4>';
+    if(r.for_sale){
+      html+='<div class="info-row"><span class="info-key">Precio</span><span class="info-val">$'+(r.price||0)+'</span></div>';
+      html+='<div style="display:flex;gap:8px;margin-top:10px">'+
+        '<button class="btn-outline" onclick="showEditPrice(\''+esc(r.id)+'\')">✏️ Editar precio</button>'+
+        '<button class="btn-danger" onclick="removeFromSale(\''+esc(r.id)+'\')">❌ Quitar de venta</button></div>';
+    } else {
+      html+='<button class="btn-save" onclick="showSetPrice(\''+esc(r.id)+'\')">💰 Poner en venta</button>';
+    }
+    html+='</div>';
+  }
+
+  if(isAdmin||isEmp){
+    html+='<button class="btn-save" onclick="goToRecord(\''+esc(r.id)+'\')">➕ '+(lang==='es'?'Registrar evento':'Log event')+'</button><br><br>';
+  }
+
+  document.getElementById('detail-content').innerHTML=html;
+  goTo('detail');
+}
+
+async function showSetPrice(id){
+  var price=prompt('Precio de venta / Sale price ($):');
+  if(!price||isNaN(parseFloat(price))) return;
+  await updateRabbit(id,{for_sale:true,price:parseFloat(price)});
+  allRabbits=await getRabbits();
+  openRabbit(id);
+  renderSales();
+}
+
+async function showEditPrice(id){
+  var r=lookup(id);
+  var price=prompt('Nuevo precio / New price ($):',(r?r.price:''));
+  if(!price||isNaN(parseFloat(price))) return;
+  await updateRabbit(id,{price:parseFloat(price)});
+  allRabbits=await getRabbits();
+  openRabbit(id);
+  renderSales();
+}
+
+async function removeFromSale(id){
+  if(!confirm('¿Quitar de venta? / Remove from sale?')) return;
+  await updateRabbit(id,{for_sale:false,price:null});
+  allRabbits=await getRabbits();
+  openRabbit(id);
+  renderSales();
+}
+
+// ── RECORDS ──────────────────────────────────────────────
+function goToRecord(id){goTo('records');renderRecordForm('monta',id);}
+
+function switchTab(type,el){
+  document.querySelectorAll('.rtab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  renderRecordForm(type,'');
+}
+
+function renderRecordForm(type,prefill){
+  var does=allRabbits.filter(function(r){return r.sex==='F'&&r.status==='Active';});
+  var bucks=allRabbits.filter(function(r){return r.sex==='M'&&r.status==='Active';});
+  var today=new Date().toISOString().split('T')[0];
+  var labels={monta:'🤝 '+(lang==='es'?'Monta':'Breeding'),palpacion:'🖐 Palpación',nido:'🪺 '+(lang==='es'?'Nido':'Nest Box'),parto:'🐣 '+(lang==='es'?'Parto':'Kindling'),destete:'📦 Destete'};
+  var html='<div class="form-section"><h4>'+labels[type]+'</h4>';
+  html+='<div class="form-row"><label>'+(lang==='es'?'Hembra':'Doe')+'</label><select id="f-doe">';
+  does.forEach(function(r){html+='<option'+(r.id===prefill?' selected':'')+' value="'+r.id+'">'+r.id+'</option>';});
+  html+='</select></div>';
+  if(type==='monta'){
+    html+='<div class="form-row"><label>'+(lang==='es'?'Macho':'Buck')+'</label><select id="f-buck">';
+    bucks.forEach(function(r){html+='<option value="'+r.id+'">'+r.id+'</option>';});
+    html+='</select></div>';
+    html+='<div class="form-row"><label>'+(lang==='es'?'Fecha de monta':'Breeding date')+'</label><input type="date" id="f-date" value="'+today+'"></div>';
+    html+='<div class="auto-dates" id="auto-dates">📅 Palpar: — &nbsp; 🪺 Nido: — &nbsp; 🐣 Parto est.: —</div>';
+  } else if(type==='palpacion'){
+    html+='<div class="form-row"><label>'+(lang==='es'?'Fecha':'Date')+'</label><input type="date" id="f-date" value="'+today+'"></div>';
+    html+='<div class="form-row"><label>Resultado / Result</label><select id="f-result"><option value="true">✅ Preñada / Pregnant</option><option value="false">❌ Vacía / Open</option></select></div>';
+  } else if(type==='nido'){
+    html+='<div class="form-row"><label>'+(lang==='es'?'Fecha':'Date')+'</label><input type="date" id="f-date" value="'+today+'"></div>';
+  } else if(type==='parto'){
+    html+='<div class="form-row"><label>'+(lang==='es'?'Fecha real de parto':'Actual kindling date')+'</label><input type="date" id="f-date" value="'+today+'"></div>';
+    html+='<div class="form-row-2"><div class="form-row" style="margin:0"><label>'+(lang==='es'?'Vivos':'Alive')+'</label><input type="number" id="f-alive" min="0" value="0"></div>'+
+      '<div class="form-row" style="margin:0"><label>'+(lang==='es'?'Muertos':'Dead')+'</label><input type="number" id="f-dead" min="0" value="0"></div></div>';
+    html+='<div class="form-row-2" style="margin-top:10px"><div class="form-row" style="margin:0"><label>♂ Machos</label><input type="number" id="f-bucks" min="0" value="0"></div>'+
+      '<div class="form-row" style="margin:0"><label>♀ Hembras</label><input type="number" id="f-does" min="0" value="0"></div></div>';
+  } else if(type==='destete'){
+    html+='<div class="form-row"><label>'+(lang==='es'?'Fecha de destete':'Weaning date')+'</label><input type="date" id="f-date" value="'+today+'"></div>';
+    html+='<div class="form-row"><label>'+(lang==='es'?'Cantidad':'Count')+'</label><input type="number" id="f-weaned" min="0" value="0"></div>';
+    html+='<div class="form-row-2"><div class="form-row" style="margin:0"><label>♂ Machos</label><input type="number" id="f-wbucks" min="0" value="0"></div>'+
+      '<div class="form-row" style="margin:0"><label>♀ Hembras</label><input type="number" id="f-wdoes" min="0" value="0"></div></div>';
+    html+='<div class="form-row"><label>'+(lang==='es'?'Peso 30 días':'30-day weight')+'</label><input type="text" id="f-w30" placeholder="e.g. 2.1 lbs"></div>';
+  }
+  html+='<div class="form-row"><label>'+(lang==='es'?'Notas':'Notes')+'</label><textarea id="f-notes" placeholder="..."></textarea></div>';
+  html+='<button class="btn-save" onclick="saveRecord(\''+type+'\')">💾 '+(lang==='es'?'Guardar':'Save')+'</button></div>';
+  document.getElementById('record-form-content').innerHTML=html;
+  if(type==='monta'){
+    var df=document.getElementById('f-date');
+    if(df){df.addEventListener('input',updateAutoDates);updateAutoDates();}
+  }
+}
+
+function updateAutoDates(){
+  var df=document.getElementById('f-date');if(!df||!df.value) return;
+  var base=df.value;
+  var el=document.getElementById('auto-dates');
+  if(el) el.innerHTML='📅 Palpar: <strong>'+addDays(base,15)+'</strong> &nbsp; 🪺 Nido: <strong>'+addDays(base,25)+'</strong> &nbsp; 🐣 Parto est.: <strong>'+addDays(base,31)+'</strong>';
+}
+
+async function saveRecord(type){
+  var doe=document.getElementById('f-doe');
+  var date=document.getElementById('f-date');
+  if(!doe||!date) return;
+  var bd=new Date(date.value+'T00:00:00');
+  var record={
+    doe_id:doe.value,
+    breeding_date:date.value,
+    notes:(document.getElementById('f-notes')||{}).value||''
+  };
+  if(type==='monta'){
+    var buck=document.getElementById('f-buck');
+    record.buck_id=buck?buck.value:'';
+    record.palpation_date=new Date(bd.getTime()+15*86400000).toISOString().split('T')[0];
+    record.nest_date=new Date(bd.getTime()+25*86400000).toISOString().split('T')[0];
+    record.estimated_kindle=new Date(bd.getTime()+31*86400000).toISOString().split('T')[0];
+  } else if(type==='palpacion'){
+    var res=document.getElementById('f-result');
+    record.pregnant=res?res.value==='true':false;
+  } else if(type==='parto'){
+    record.actual_kindle=date.value;
+    record.born_alive=parseInt((document.getElementById('f-alive')||{}).value||0);
+    record.born_dead=parseInt((document.getElementById('f-dead')||{}).value||0);
+    record.weaned_bucks=parseInt((document.getElementById('f-bucks')||{}).value||0);
+    record.weaned_does=parseInt((document.getElementById('f-does')||{}).value||0);
+  } else if(type==='destete'){
+    record.weaned=parseInt((document.getElementById('f-weaned')||{}).value||0);
+    record.weaned_bucks=parseInt((document.getElementById('f-wbucks')||{}).value||0);
+    record.weaned_does=parseInt((document.getElementById('f-wdoes')||{}).value||0);
+    record.weight_30day=(document.getElementById('f-w30')||{}).value||'';
+  }
+  try{
+    await insertRecord(record);
+    breedingRecords=await getBreedingRecords();
+    renderAlerts();
+    var t=document.getElementById('saved-toast');
+    t.style.display='block';
+    setTimeout(function(){t.style.display='none';},3000);
+  } catch(e){
+    var et=document.getElementById('error-toast');
+    et.style.display='block';
+    setTimeout(function(){et.style.display='none';},4000);
+  }
+}
+
+// ── SALES ────────────────────────────────────────────────
+function renderSales(){
+  var forSale=allRabbits.filter(function(r){return r.for_sale;});
+  var html='';
+  forSale.forEach(function(r){
+    html+='<div class="forsale-card" onclick="openRabbit(\''+esc(r.id)+'\')">'+
+      '<div class="forsale-top"><div><div class="forsale-name">'+r.id+' — '+r.name+'</div>'+
+      '<div class="forsale-meta">'+(r.breed||'-')+' · '+(r.color||'-')+' · '+(r.sex==='M'?'♂':'♀')+'</div></div>'+
+      '<div class="forsale-price">$'+(r.price||'?')+'</div></div>'+
+      '<span class="forsale-badge">🌳 Pedigree 3 gen.</span></div>';
+  });
+  document.getElementById('sales-list').innerHTML=html||'<p style="color:var(--muted);text-align:center;padding:30px;font-family:sans-serif">Sin conejos en venta / No rabbits for sale</p>';
+}
+
+// ── ADD RABBIT ───────────────────────────────────────────
+function showAddRabbit(){
+  var bucks=allRabbits.filter(function(r){return r.sex==='M';});
+  var does=allRabbits.filter(function(r){return r.sex==='F';});
+  var html='';
+  var fields=[
+    ['f-id','ID *','text',''],['f-name','Nombre completo / Full name','text',''],
+    ['f-sex','Sexo / Sex','select',''],['f-color','Color','text',''],
+    ['f-dob','Fecha de nacimiento / DOB','date',''],['f-breed','Raza / Breed','select',''],
+    ['f-weight','Peso / Weight','text',''],['f-sire','Padre ID / Sire ID','text',''],
+    ['f-dam','Madre ID / Dam ID','text',''],['f-status','Status','select','']
+  ];
+  fields.forEach(function(f){
+    html+='<div class="form-row"><label>'+f[1]+'</label>';
+    if(f[2]==='select'){
+      if(f[0]==='f-sex') html+='<select id="'+f[0]+'"><option value="M">♂ Macho / Buck</option><option value="F">♀ Hembra / Doe</option></select>';
+      else if(f[0]==='f-breed') html+='<select id="'+f[0]+'"><option>New Zealand</option><option>Mini Rex</option><option>Lionhead</option><option>Other</option></select>';
+      else if(f[0]==='f-status') html+='<select id="'+f[0]+'"><option value="Active">Active</option><option value="Archive">Archive</option></select>';
+    } else {
+      html+='<input type="'+f[2]+'" id="'+f[0]+'" placeholder="'+f[3]+'">';
+    }
+    html+='</div>';
+  });
+  html+='<div style="display:flex;gap:8px">'+
+    '<button class="btn-save" style="flex:1" onclick="submitNewRabbit()">💾 Guardar</button>'+
+    '<button class="btn-outline" onclick="closeModal()">Cancelar</button></div>';
+  document.getElementById('add-rabbit-form').innerHTML=html;
+  document.getElementById('add-rabbit-modal').classList.add('active');
+}
+
+function closeModal(){document.getElementById('add-rabbit-modal').classList.remove('active');}
+
+async function submitNewRabbit(){
+  var id=document.getElementById('f-id').value.trim();
+  if(!id){alert('El ID es requerido / ID is required');return;}
+  if(lookup(id)){alert('Ya existe un conejo con ese ID / ID already exists');return;}
+  var rabbit={
+    id:id,
+    name:document.getElementById('f-name').value||id,
+    sex:document.getElementById('f-sex').value,
+    color:document.getElementById('f-color').value||'-',
+    dob:document.getElementById('f-dob').value||'',
+    breed:document.getElementById('f-breed').value,
+    weight:document.getElementById('f-weight').value||'-',
+    sire_id:document.getElementById('f-sire').value||'',
+    dam_id:document.getElementById('f-dam').value||'',
+    status:document.getElementById('f-status').value,
+    price:null,for_sale:false
+  };
+  try{
+    await insertRabbit(rabbit);
+    allRabbits=await getRabbits();
+    renderHome();
+    renderSearchResults('');
+    renderRecordForm('monta','');
+    closeModal();
+    alert('✅ Conejo agregado / Rabbit added: '+id);
+  } catch(e){
+    alert('Error al guardar: '+e.message);
+  }
+}
+
+function esc(s){return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+</script>
+</body>
+</html>
