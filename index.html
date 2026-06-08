@@ -325,7 +325,7 @@ async function sbFetch(path,opts){
 }
 
 async function getRabbits(){
-  return sbFetch('rabbits?select=*&order=dob.desc');
+  return sbFetch('rabbits?select=*&order=dob.desc&limit=500', {headers:{'Range-Unit':'items','Range':'0-499'}});
 }
 async function getBreedingRecords(){
   return sbFetch('breeding_records?select=*&order=created_at.desc');
@@ -341,7 +341,12 @@ async function insertRecord(r){
 }
 
 // ── UTILS ────────────────────────────────────────────────
-function lookup(id){return allRabbits.find(function(r){return r.id===id;})||null;}
+function lookup(id){
+  if(!id||id===''||id==='-') return null;
+  var trimmed=id.trim();
+  return allRabbits.find(function(r){return r.id===trimmed;})||
+         allRabbits.find(function(r){return r.id.trim().toLowerCase()===trimmed.toLowerCase();})||null;
+}
 
 function calcAge(dob){
   if(!dob||dob==='-'||dob==='') return '-';
