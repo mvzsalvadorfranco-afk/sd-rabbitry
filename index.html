@@ -935,67 +935,60 @@ function esc(s){return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function printPedigree(id){
   var r=lookup(id);
   if(!r){alert('Conejo no encontrado');return;}
-
+  var LOGO='https://raw.githubusercontent.com/mvzsalvadorfranco-afk/sd-rabbitry/main/logo.png';
   function getR(rid){
     if(!rid||rid===''||rid==='-') return null;
     return allRabbits.find(function(x){return x.id===rid;})||
-           allRabbits.find(function(x){return x.id.trim().toLowerCase()===rid.trim().toLowerCase();})||null;
+           allRabbits.find(function(x){return (x.id||'').toLowerCase()===(rid||'').toLowerCase();})||null;
   }
-
-  function node(rid,label,cls){
+  function nd(rid,lbl,bg,bl){
     var a=getR(rid);
-    var bg={'sire':'#E3F2FD','dam':'#FCE4EC','gs1':'#E8EAF6','gs2':'#E0F2F1','gs3':'#FFF3E0','gs4':'#F3E5F5','gg':'#F5F5F5'}[cls]||'#F5F5F5';
-    var bl={'sire':'#1565C0','dam':'#E91E63','gs1':'#3F51B5','gs2':'#009688','gs3':'#FF9800','gs4':'#9C27B0','gg':'#aaa'}[cls]||'#aaa';
-    var n=a?a:null;
-    return '<td style="vertical-align:top;padding:3px"><div style="background:'+bg+';border-left:3px solid '+bl+';border:1px solid '+bl+';border-radius:4px;padding:5px;font-size:8px;min-height:55px">'+
-      '<div style="font-size:7px;color:#666;text-transform:uppercase;margin-bottom:2px">'+label+'</div>'+
-      (n?'<div style="font-weight:bold;font-size:8.5px">'+n.name+'</div>'+
-        '<div style="color:#333">ID: '+n.id+' &nbsp; '+(n.sex==='M'?'♂':'♀')+'</div>'+
-        '<div style="color:#333">DOB: '+(n.dob||'—')+'</div>'+
-        '<div style="color:#333">'+( n.color||'—')+'</div>'+
-        '<div style="color:#333">'+(n.breed||'—')+'</div>'
-      :'<div style="color:#aaa">'+(rid&&rid!=='-'?rid:'—')+'</div>')+
+    return '<td style="vertical-align:top;padding:2px"><div style="background:'+bg+';border-left:3px solid '+bl+';border:1px solid '+bl+';border-radius:3px;padding:4px;font-size:7.5px;min-height:52px">'+
+      '<div style="font-size:6.5px;color:#666;text-transform:uppercase;margin-bottom:1px">'+lbl+'</div>'+
+      (a?'<b style="font-size:8px">'+a.name+'</b><br>ID: '+a.id+' '+(a.sex==='M'?'&#9794;':'&#9792;')+'<br>DOB: '+(a.dob||'&mdash;')+'<br>'+(a.color||'&mdash;')+'<br>'+(a.breed||'&mdash;')
+        :'<span style="color:#bbb">'+(rid&&rid!=='-'?rid:'&mdash;')+'</span>')+
       '</div></td>';
   }
-
   var s=r.sire_id||'',d=r.dam_id||'';
   var sr=getR(s),dr=getR(d);
   var ss=sr?sr.sire_id||'':'',sd=sr?sr.dam_id||'':'';
   var ds=dr?dr.sire_id||'':'',dd=dr?dr.dam_id||'':'';
   var ssr=getR(ss),sdr=getR(sd),dsr=getR(ds),ddr=getR(dd);
+  var sss=ssr?ssr.sire_id||'':'',ssd=ssr?ssr.dam_id||'':'';
+  var sds=sdr?sdr.sire_id||'':'',sdd=sdr?sdr.dam_id||'':'';
+  var dss=dsr?dsr.sire_id||'':'',dsd=dsr?dsr.dam_id||'':'';
+  var dds=ddr?ddr.sire_id||'':'',ddd=ddr?ddr.dam_id||'':'';
   var today=new Date().toLocaleDateString('en-US');
-
   var rows=
-    '<tr>'+node(ss?getR(ss)?getR(ss).sire_id||'':ss:'','GGS','gg')+node(ss?getR(ss)?getR(ss).dam_id||'':ss:'','GGD','gg')+node(ss,'G-Sire/Sire','gs1')+node(s,'SIRE','sire')+'<td rowspan="4" style="vertical-align:middle;padding:3px"><div style="background:#1565C0;color:#fff;border-radius:6px;padding:10px;text-align:center;font-size:10px;font-weight:bold">'+r.id+'<br><span style="font-size:8px;font-weight:normal">'+(r.sex==='M'?'♂':'♀')+' '+(r.breed||'')+'</span><br><span style="font-size:7px;opacity:.8">'+(r.color||'')+'</span></div></td></tr>'+
-    '<tr>'+node(sd?getR(sd)?getR(sd).sire_id||'':sd:'','GGS','gg')+node(sd?getR(sd)?getR(sd).dam_id||'':sd:'','GGD','gg')+node(sd,'G-Dam/Sire','gs2')+'<td></td></tr>'+
-    '<tr>'+node(ds?getR(ds)?getR(ds).sire_id||'':ds:'','GGS','gg')+node(ds?getR(ds)?getR(ds).dam_id||'':ds:'','GGD','gg')+node(ds,'G-Sire/Dam','gs3')+node(d,'DAM','dam')+'</tr>'+
-    '<tr>'+node(dd?getR(dd)?getR(dd).sire_id||'':dd:'','GGS','gg')+node(dd?getR(dd)?getR(dd).dam_id||'':dd:'','GGD','gg')+node(dd,'G-Dam/Dam','gs4')+'<td></td></tr>';
-
-  var html='<html><head><meta charset="UTF-8"><title>Pedigree '+id+'</title>'+
-    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9px;padding:10px;background:#fff}'+
-    '@media print{@page{size:letter landscape;margin:6mm}button{display:none}}</style></head><body>'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1565C0;padding-bottom:6px;margin-bottom:8px">'+
-    '<img src="'+logo_url+'" width="65" height="65" style="object-fit:contain">'+
-    '<div style="text-align:center"><div style="font-size:18px;font-weight:bold;color:#1565C0;letter-spacing:2px">S & D RABBITRY</div>'+
+    '<tr>'+nd(sss,'GGS','#F5F5F5','#ccc')+nd(ssd,'GGD','#F5F5F5','#ccc')+nd(ss,'G-Sire/Sire','#E8EAF6','#3F51B5')+nd(s,'SIRE','#E3F2FD','#1565C0')+
+    '<td rowspan="4" style="vertical-align:middle;padding:4px;width:11%"><div style="background:#1565C0;color:#fff;border-radius:6px;padding:10px;text-align:center;font-size:10px;font-weight:bold">'+
+    r.id+'<br><span style="font-size:8px;font-weight:normal">'+(r.sex==='M'?'&#9794;':'&#9792;')+' '+(r.breed||'')+'<br>'+(r.color||'')+'</span></div></td></tr>'+
+    '<tr>'+nd(sds,'GGS','#F5F5F5','#ccc')+nd(sdd,'GGD','#F5F5F5','#ccc')+nd(sd,'G-Dam/Sire','#E0F2F1','#009688')+'<td></td></tr>'+
+    '<tr>'+nd(dss,'GGS','#F5F5F5','#ccc')+nd(dsd,'GGD','#F5F5F5','#ccc')+nd(ds,'G-Sire/Dam','#FFF3E0','#FF9800')+nd(d,'DAM','#FCE4EC','#E91E63')+'</tr>'+
+    '<tr>'+nd(dds,'GGS','#F5F5F5','#ccc')+nd(ddd,'GGD','#F5F5F5','#ccc')+nd(dd,'G-Dam/Dam','#F3E5F5','#9C27B0')+'<td></td></tr>';
+  var header=
+    '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1565C0;padding-bottom:8px;margin-bottom:8px">'+
+    '<img src="'+LOGO+'" width="65" height="65" style="object-fit:contain">'+
+    '<div style="text-align:center"><div style="font-size:18px;font-weight:bold;color:#1565C0;letter-spacing:2px">S &amp; D RABBITRY</div>'+
     '<div style="font-size:9px;color:#666;letter-spacing:1px">Quality &bull; Health &bull; Genetics</div></div>'+
-    '<img src="'+logo_url+'" width="65" height="65" style="object-fit:contain"></div>'+
+    '<img src="'+LOGO+'" width="65" height="65" style="object-fit:contain"></div>';
+  var subj=
     '<div style="background:#1565C0;color:#fff;border-radius:5px;padding:7px 10px;margin-bottom:8px;font-size:9px">'+
-    '<span style="font-size:13px;font-weight:bold">'+r.name+'&nbsp;&nbsp;'+(r.sex==='M'?'♂ BUCK':'♀ DOE')+'</span><br>'+
-    'ID: '+r.id+'&nbsp;&nbsp;&nbsp;DOB: '+(r.dob||'—')+'&nbsp;&nbsp;&nbsp;COLOR: '+(r.color||'—')+'&nbsp;&nbsp;&nbsp;BREED: '+(r.breed||'—')+'&nbsp;&nbsp;&nbsp;WEIGHT: '+(r.weight||'—')+
-    '</div>'+
-    '<table style="width:100%;border-collapse:collapse">'+rows+'</table>'+
+    '<b style="font-size:13px">'+r.name+' '+(r.sex==='M'?'&#9794; BUCK':'&#9792; DOE')+'</b><br>'+
+    'ID: '+r.id+' &nbsp; DOB: '+(r.dob||'&mdash;')+' &nbsp; COLOR: '+(r.color||'&mdash;')+' &nbsp; BREED: '+(r.breed||'&mdash;')+' &nbsp; WEIGHT: '+(r.weight||'&mdash;')+'</div>';
+  var foot=
     '<div style="border-top:1px solid #ccc;margin-top:8px;padding-top:6px;display:flex;justify-content:space-between;font-size:8px">'+
-    '<div style="font-style:italic;color:#555">I certify that this pedigree is correct to the best of my knowledge.<br>S&D Rabbitry &mdash; sdrabbitry.com</div>'+
-    '<div style="text-align:right">Signed: ___________________________<br><br>Date: '+today+'</div></div>'+
-    '<div style="text-align:center;margin-top:10px">'+
-    '<button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer">🖨 Imprimir / Print</button></div>'+
-    '</body></html>';
-
-  var win=window.open('','_blank','width=900,height=700');
-  if(!win){alert('Por favor permite ventanas emergentes para esta página / Please allow popups for this site');return;}
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
+    '<i style="color:#555">I certify that this pedigree is correct to the best of my knowledge.<br>S&amp;D Rabbitry &mdash; sdrabbitry.com</i>'+
+    '<div style="text-align:right">Signed: ___________________________<br><br>Date: '+today+'</div></div>';
+  var ped='<div style="font-family:Arial,sans-serif;padding:12px;background:#fff">'+header+subj+'<table style="width:100%;border-collapse:collapse">'+rows+'</table>'+foot+'</div>';
+  var overlay=document.getElementById('ped-overlay');
+  if(!overlay){overlay=document.createElement('div');overlay.id='ped-overlay';overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;overflow-y:auto';document.body.appendChild(overlay);}
+  overlay.innerHTML='<div style="position:sticky;top:0;background:#1565C0;padding:10px 16px;display:flex;justify-content:space-between;align-items:center"><b style="color:#fff;font-size:14px">Pedigree &mdash; '+id+'</b>'+
+    '<div style="display:flex;gap:8px">'+
+    '<button onclick="window.print()" style="background:#fff;color:#1565C0;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-weight:bold">&#128424; Imprimir</button>'+
+    '<button onclick="document.getElementById('ped-overlay').style.display='none'" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer">&#10005; Cerrar</button>'+
+    '</div></div>'+ped;
+  overlay.style.display='block';
 }
 
 function printQR(id){
