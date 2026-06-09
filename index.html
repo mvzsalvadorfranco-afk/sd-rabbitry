@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0049)file:///C:/Users/choic/Downloads/index%20(4).html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>S&D Rabbitry</title>
+<title>S&amp;D Rabbitry</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -169,8 +169,8 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 <!-- LOGIN -->
 <div id="screen-login">
   <div style="font-size:56px;margin-bottom:10px">🐰</div>
-  <div style="font-size:24px;font-weight:bold;color:#fff;margin-bottom:4px">S&D Rabbitry</div>
-  <div style="color:rgba(255,255,255,.7);font-size:13px;margin-bottom:36px;font-family:sans-serif">Pedigree & Farm Management</div>
+  <div style="font-size:24px;font-weight:bold;color:#fff;margin-bottom:4px">S&amp;D Rabbitry</div>
+  <div style="color:rgba(255,255,255,.7);font-size:13px;margin-bottom:36px;font-family:sans-serif">Pedigree &amp; Farm Management</div>
   <div class="login-card">
     <h3 style="font-size:16px;margin-bottom:20px;font-family:sans-serif">Iniciar sesión / Sign in</h3>
     <div class="field">
@@ -187,14 +187,14 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
       <div class="pass-wrap">
         <input type="password" id="login-pass" placeholder="••••••••">
         <button class="pass-eye" onclick="togglePass()" type="button">
-          <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
         </button>
       </div>
     </div>
     <button class="btn-primary" onclick="doLogin()">Entrar / Login</button>
     <div id="login-hint" style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;font-family:sans-serif"></div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
-      <a href="#" onclick="goPublic()" style="font-size:13px;color:var(--green);font-family:sans-serif;text-decoration:none">Ver conejos en venta / View for sale →</a>
+      <a href="file:///C:/Users/choic/Downloads/index%20(4).html#" onclick="goPublic()" style="font-size:13px;color:var(--green);font-family:sans-serif;text-decoration:none">Ver conejos en venta / View for sale →</a>
     </div>
   </div>
 </div>
@@ -202,7 +202,7 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 <!-- MAIN APP -->
 <div id="main-app" style="display:none">
   <div class="topbar">
-    <div><div class="topbar-title">🐰 S&D Rabbitry</div><div class="topbar-sub" id="topbar-role"></div></div>
+    <div><div class="topbar-title">🐰 S&amp;D Rabbitry</div><div class="topbar-sub" id="topbar-role"></div></div>
     <div class="topbar-right">
       <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">ES</button>
       <div class="topbar-avatar" onclick="doLogout()" id="user-avatar" title="Cerrar sesión">↩</div>
@@ -228,16 +228,16 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
   <div id="screen-search" class="screen" style="padding:16px">
     <div class="section-title">BUSCAR CONEJOS</div>
     <div class="search-wrap">
-      <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
       <input type="text" placeholder="ID, nombre, raza, color..." oninput="filterRabbits(this.value)" id="search-input">
     </div>
     <div class="filter-row">
-      <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
-      <button class="filter-btn" onclick="setFilter('buck',this)">♂ Machos</button>
-      <button class="filter-btn" onclick="setFilter('doe',this)">♀ Hembras</button>
-      <button class="filter-btn" onclick="setFilter('New Zealand',this)">New Zealand</button>
-      <button class="filter-btn" onclick="setFilter('Mini Rex',this)">Mini Rex</button>
-      <button class="filter-btn" onclick="setFilter('Lionhead',this)">Lionhead</button>
+      <button class="filter-btn active" onclick="setFilter(&#39;all&#39;,this)">Todos</button>
+      <button class="filter-btn" onclick="setFilter(&#39;buck&#39;,this)">♂ Machos</button>
+      <button class="filter-btn" onclick="setFilter(&#39;doe&#39;,this)">♀ Hembras</button>
+      <button class="filter-btn" onclick="setFilter(&#39;New Zealand&#39;,this)">New Zealand</button>
+      <button class="filter-btn" onclick="setFilter(&#39;Mini Rex&#39;,this)">Mini Rex</button>
+      <button class="filter-btn" onclick="setFilter(&#39;Lionhead&#39;,this)">Lionhead</button>
     </div>
     <div id="search-results"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
   </div>
@@ -245,7 +245,7 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
   <!-- DETAIL -->
   <div id="screen-detail" class="screen" style="padding:16px">
     <button class="back-btn" onclick="goBack()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
       Volver / Back
     </button>
     <div id="detail-content"></div>
@@ -255,11 +255,11 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
   <div id="screen-records" class="screen" style="padding:16px">
     <div class="section-title">REGISTRAR EVENTO</div>
     <div class="record-tabs">
-      <div class="rtab active" onclick="switchTab('monta',this)">🤝 Monta</div>
-      <div class="rtab" onclick="switchTab('palpacion',this)">🖐 Palpación</div>
-      <div class="rtab" onclick="switchTab('nido',this)">🪺 Nido</div>
-      <div class="rtab" onclick="switchTab('parto',this)">🐣 Parto</div>
-      <div class="rtab" onclick="switchTab('destete',this)">📦 Destete</div>
+      <div class="rtab active" onclick="switchTab(&#39;monta&#39;,this)">🤝 Monta</div>
+      <div class="rtab" onclick="switchTab(&#39;palpacion&#39;,this)">🖐 Palpación</div>
+      <div class="rtab" onclick="switchTab(&#39;nido&#39;,this)">🪺 Nido</div>
+      <div class="rtab" onclick="switchTab(&#39;parto&#39;,this)">🐣 Parto</div>
+      <div class="rtab" onclick="switchTab(&#39;destete&#39;,this)">📦 Destete</div>
     </div>
     <div id="saved-toast" class="saved-toast">✅ Registro guardado / Record saved</div>
     <div id="error-toast" class="error-toast">❌ Error al guardar. Intenta de nuevo.</div>
@@ -282,20 +282,20 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <button class="nav-item active" onclick="goTo('home')" id="nav-home">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <button class="nav-item active" onclick="goTo(&#39;home&#39;)" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       Inicio
     </button>
-    <button class="nav-item" onclick="goTo('search')" id="nav-search">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <button class="nav-item" onclick="goTo(&#39;search&#39;)" id="nav-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       Buscar
     </button>
-    <button class="nav-item" onclick="goTo('records')" id="nav-records">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <button class="nav-item" onclick="goTo(&#39;records&#39;)" id="nav-records">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
       Registrar
     </button>
-    <button class="nav-item" onclick="goTo('sales')" id="nav-sales">
-      <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    <button class="nav-item" onclick="goTo(&#39;sales&#39;)" id="nav-sales">
+      <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
       Venta
     </button>
   </div>
@@ -316,9 +316,10 @@ var allRabbits=[], breedingRecords=[];
 
 // ── SUPABASE API ─────────────────────────────────────────
 async function sbFetch(path,opts){
-  var res=await fetch(SUPA_URL+'/rest/v1/'+path,Object.assign({
-    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'}
-  },opts));
+  var defaultHeaders={'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+  var fetchOpts=Object.assign({},opts||{});
+  fetchOpts.headers=Object.assign({},defaultHeaders,fetchOpts.headers||{});
+  var res=await fetch(SUPA_URL+'/rest/v1/'+path,fetchOpts);
   if(!res.ok){var e=await res.text();throw new Error(e);}
   var txt=await res.text();
   return txt?JSON.parse(txt):[];
@@ -916,5 +917,6 @@ async function submitNewRabbit(){
 function esc(s){return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 
 </script>
-</body>
-</html>
+
+
+</body></html>
