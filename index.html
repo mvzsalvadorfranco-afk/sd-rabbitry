@@ -177,14 +177,14 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
     <h3 style="font-size:16px;margin-bottom:20px;font-family:sans-serif">Iniciar sesión / Sign in</h3>
     <div class="field">
       <label>Usuario / User</label>
-      <select id="login-user">
+      <select id="login-user" onchange="var isPublic=this.value==='public';document.getElementById('pass-field').style.display=isPublic?'none':'block'">
         <option value="">Select role...</option>
         <option value="admin">Admin (Full access)</option>
         <option value="employee">Empleado / Employee</option>
         <option value="public">Público / Buyer</option>
       </select>
     </div>
-    <div class="field">
+    <div class="field" id="pass-field">
       <label>Contraseña / Password</label>
       <div class="pass-wrap">
         <input type="password" id="login-pass" placeholder="••••••••">
