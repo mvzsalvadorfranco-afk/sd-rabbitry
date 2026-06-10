@@ -347,6 +347,14 @@ async function insertRecord(r){
 }
 
 // ── UTILS ────────────────────────────────────────────────
+function fmtDob(dob){
+  if(!dob||dob==='-'||dob==='') return '-';
+  var s=String(dob).trim();
+  if(/^[0-9]{5}$/.test(s)){var d=new Date(1899,11,30);d.setDate(d.getDate()+parseInt(s));return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+d.getFullYear();}
+  if(s.indexOf(' 00:00:00')>0){var p=s.split(' ')[0].split('-');if(p.length===3)return p[1]+'/'+p[2]+'/'+p[0];}
+  if(s.indexOf('T00:00:00')>0){var p=s.split('T')[0].split('-');if(p.length===3)return p[1]+'/'+p[2]+'/'+p[0];}
+  return dob;
+}
 function lookup(id){
   if(!id||id===''||id==='-') return null;
   var trimmed=id.trim();
@@ -663,7 +671,7 @@ function openRabbit(id){
   prevScreen=currentUser==='public'?'sales':'home';
   var isAdmin=currentUser==='admin', isEmp=currentUser==='employee';
   var html='<div class="detail-header"><div style="display:flex;justify-content:space-between;align-items:flex-start">'+
-    '<div><div class="detail-name">'+r.id+'</div><div class="detail-fullname">'+r.name+'</div></div>'+
+    '<div><div class="detail-name">'+r.name+'</div><div class="detail-fullname">ID: '+r.id+'</div></div>'+
     '<div style="font-size:32px">'+(r.sex==='M'?'♂':'♀')+'</div></div>'+
     '<div class="detail-chips"><span class="chip">'+(r.breed||'-')+'</span><span class="chip">'+(r.color||'-')+'</span><span class="chip">'+calcAge(r.dob)+'</span><span class="chip">'+r.status+'</span>'+
     (r.for_sale?'<span class="chip" style="background:rgba(255,220,50,.4)">💰 $'+(r.price||'?')+'</span>':'')+'</div></div>';
