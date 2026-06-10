@@ -162,6 +162,7 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 .history-date{font-size:11px;color:var(--muted)}
 .history-text{font-size:13px;margin-top:2px}
 @media print{body > *{display:none!important}#ped-overlay{display:block!important;position:static!important;overflow:visible!important}}
+@media print{body>*:not(#ped-overlay){display:none!important}#ped-overlay{position:static!important;width:100%!important;overflow:visible!important}}
 </style>
 </head>
 <body>
@@ -993,7 +994,7 @@ function printPedigree(id){
   var mCl=iF?'#880E4F':'#fff';
   var mBd=iF?'2pt solid #E91E63':'none';
 
-  var css='*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;font-family:Arial,sans-serif;background:#fff}body{padding:6mm}.wrap{width:100%;height:calc(100% - 12mm);display:flex;flex-direction:column}.ped{display:flex;flex:1;gap:3pt;min-height:0}.c1{flex:13;display:flex;align-items:center}.c2{flex:19;display:flex;flex-direction:column}.c3{flex:26;display:flex;flex-direction:column}.c4{flex:42;display:flex;flex-direction:column}.noprint{text-align:center;margin-top:5pt}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;height:100%}.noprint{display:none!important}}';
+  var css='*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;font-family:Arial,sans-serif;background:#fff}body{padding:6mm}.wrap{width:100%;height:calc(100% - 12mm);display:flex;flex-direction:column}.ped{display:flex;flex:1;gap:3pt;min-height:0}.c1{flex:13;display:flex;align-items:center}.c2{flex:19;display:flex;flex-direction:column}.c3{flex:26;display:flex;flex-direction:column}.c4{flex:42;display:flex;flex-direction:column}.noprint{text-align:center;margin-top:5pt}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;height:100%;width:100%}.wrap{width:100%!important;height:100%!important}.ped{width:100%!important}.noprint{display:none!important}}';
 
   var h=['<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedigree ',id,'</title><style>',css,'</style></head><body><div class="wrap">'];
 
@@ -1059,7 +1060,7 @@ function printPedigree(id){
 
   var full=h.join('');
   var overlay=document.getElementById('ped-overlay');
-  if(!overlay){overlay=document.createElement('div');overlay.id='ped-overlay';overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;overflow-y:auto';document.body.appendChild(overlay);}
+  if(!overlay){overlay=document.createElement('div');overlay.id='ped-overlay';overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;width:100%;background:#fff;z-index:9999;overflow-y:auto';document.body.appendChild(overlay);}
   overlay.innerHTML=full;
   overlay.style.display='block';
 }
