@@ -1064,6 +1064,45 @@ function printPedigree(id){
   overlay.innerHTML=full;
   overlay.style.display='block';
 }
+function printQR(id){
+  var r=lookup(id);
+  if(!r){alert('Conejo no encontrado');return;}
+  var url='https://sd-rabbitry.vercel.app/?rabbit='+encodeURIComponent(id);
+  var qr='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(url);
+  var win=window.open('','_blank');
+  win.document.write('<html><head><title>QR - '+id+'</title></head><body style="text-align:center;font-family:Arial;padding:20px">');
+  win.document.write('<h2>'+r.name+'</h2><p>'+r.breed+' &bull; '+(r.sex==='M'?'Buck':'Doe')+'</p>');
+  win.document.write('<img src="'+qr+'" width="300" height="300"><br><br>');
+  win.document.write('<p style="font-size:12px;color:#666">'+url+'</p>');
+  win.document.write('<br><button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer">Imprimir QR</button>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
+
+function emailRabbit(id){
+  var r=lookup(id);
+  if(!r) return;
+  var pedUrl='https://sd-rabbitry.vercel.app/?rabbit='+encodeURIComponent(id);
+  var subject='S%26D%20Rabbitry%20%E2%80%94%20Pedigree%3A%20'+encodeURIComponent(r.name);
+  var body='Hello!%0A%0AThank%20you%20for%20your%20interest%20in%20S%26D%20Rabbitry.%0A%0A';
+  body+='Pedigree%20for%20'+encodeURIComponent(r.name)+'%3A%0A';
+  body+='Breed%3A%20'+encodeURIComponent(r.breed||'-')+'%0A';
+  body+='Color%3A%20'+encodeURIComponent(r.color||'-')+'%0A';
+  body+='DOB%3A%20'+encodeURIComponent(r.dob||'-')+'%0A';
+  body+=(r.price?'Price%3A%20%24'+r.price+'%0A':'');
+  body+='%0AView%20pedigree%3A%20'+encodeURIComponent(pedUrl);
+  body+='%0A%0AS%26D%20Rabbitry%0A45812%20State%20Route%20309%2C%20Alger%20Ohio%2045812';
+  window.location.href='mailto:?subject='+subject+'&body='+body;
+}
+
+function smsRabbit(id){
+  var r=lookup(id);
+  if(!r) return;
+  var pedUrl='https://sd-rabbitry.vercel.app/?rabbit='+encodeURIComponent(id);
+  var msg='S%26D%20Rabbitry%20-%20'+encodeURIComponent(r.name)+'%20('+encodeURIComponent(r.breed||'')+'%2C%20'+encodeURIComponent(r.color||'')+')'+'%0A'+encodeURIComponent(pedUrl);
+  window.location.href='sms:?&body='+msg;
+}
+
 </script>
 </body>
 </html>
