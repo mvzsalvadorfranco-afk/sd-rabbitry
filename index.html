@@ -711,6 +711,8 @@ function openRabbit(id){
     '<div style="font-size:11px;color:var(--muted);word-break:break-all;margin-top:8px">'+qrUrl+'</div>'+
     '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px">'+
     '<button class="btn-outline" onclick="printPedigree(\''+r.id.replace(/'/g, "\\'")+'\')">🖨 Ver Pedigree</button>'+
+    (currentUser==='public'&&r.for_sale?'<a href="sms:6055519036?&body=Hi!%20I%20am%20interested%20in%20'+encodeURIComponent(r.name)+'%20('+encodeURIComponent(r.breed||'')+'%2C%20%24'+(r.price||'?')+')%20from%20S%26D%20Rabbitry.%20Please%20contact%20me!" class="btn-outline" style="text-decoration:none;display:inline-block">📱 Text Salvador</a>':'')+
+    (currentUser==='public'&&r.for_sale?'<a href="sms:5672893003?&body=Hi!%20I%20am%20interested%20in%20'+encodeURIComponent(r.name)+'%20('+encodeURIComponent(r.breed||'')+'%2C%20%24'+(r.price||'?')+')%20from%20S%26D%20Rabbitry.%20Please%20contact%20me!" class="btn-outline" style="text-decoration:none;display:inline-block;background:#25D366;color:#fff;border-color:#25D366">📱 Text S&D</a>':'')+
     (isAdmin||isEmp?'<button class="btn-outline" onclick="printQR(\''+r.id.replace(/'/g, "\\'")+'\')">📱 Imprimir QR</button>':'')+
     (isAdmin||isEmp?'<button class="btn-outline" onclick="emailRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">📧 Email</button>':'')+
     (isAdmin||isEmp?'<button class="btn-outline" onclick="smsRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">💬 SMS</button>':'')+
