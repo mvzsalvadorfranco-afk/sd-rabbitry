@@ -970,7 +970,7 @@ function printPedigree(id){
   var today=new Date().toLocaleDateString('en-US');
   var iF=r.sex==='F';
   var p=[];
-  p.push('<html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:8px;background:#fff}table{width:100%;border-collapse:collapse}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>');
+  p.push('<html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:8px;background:#fff;width:100%;min-width:100%}table{width:100%;border-collapse:collapse;table-layout:fixed}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;width:100%;margin:0}}</style></head><body>');
   p.push('<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1565C0;padding-bottom:6px;margin-bottom:6px">');
   p.push('<img src="'+LOGO+'" width="58" height="58" style="object-fit:contain">');
   p.push('<div style="text-align:center"><div style="font-size:18px;font-weight:bold;color:#1565C0;letter-spacing:1px">S&amp;D RABBITRY</div><div style="font-size:9px;color:#666">Quality &bull; Health &bull; Genetics</div></div>');
@@ -978,7 +978,7 @@ function printPedigree(id){
   p.push('<div style="background:'+(iF?'#FFEAF2':'#1565C0')+';color:'+(iF?'#880E4F':'#fff')+';border-radius:4px;padding:6px 10px;margin-bottom:6px;font-size:9px">');
   p.push('<b style="font-size:12px">'+r.name+' '+(iF?'&#9792; DOE':'&#9794; BUCK')+'</b><br>');
   p.push('ID: '+r.id+' | DOB: '+fmt(r.dob)+' | COLOR: '+(r.color||'-')+' | BREED: '+(r.breed||'-')+' | WEIGHT: '+(r.weight||'-')+'</div>');
-  p.push('<table>');
+  p.push('<table><colgroup><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:19%"><col style="width:19%"><col style="width:7%"></colgroup>');
   p.push('<tr>'+cell(sss,'GGS','#F5F5F5','#ccc')+cell(ssd,'GGD','#F5F5F5','#ccc')+cell(ss,'G-Sire/Sire','#EAF3FF','#1565C0')+cell(s,'SIRE','#DDEEFF','#1565C0'));
   p.push('<td rowspan="4" style="vertical-align:middle;padding:4px;width:12%"><div style="background:'+(iF?'#FFEAF2':'#1565C0')+';color:'+(iF?'#880E4F':'#fff')+';border-radius:6px;padding:10px;text-align:center;font-size:10px;font-weight:bold">');
   p.push(r.id+'<br><span style="font-size:8px;font-weight:normal">'+(iF?'&#9792; Doe':'&#9794; Buck')+'<br>'+(r.breed||'')+'<br>'+(r.color||'')+'</span></div></td></tr>');
