@@ -669,6 +669,11 @@ function openRabbit(id){
   if(!r){r=allRabbits.find(function(x){return x.id===id;});}
   if(!r) return;
   prevScreen=currentUser==='public'?'sales':'home';
+  // Increment views counter
+  if(r.for_sale){
+    sbFetch('rabbits?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({views:(r.views||0)+1})});
+    r.views=(r.views||0)+1;
+  }
   var isAdmin=currentUser==='admin', isEmp=currentUser==='employee';
   var html='<div class="detail-header"><div style="display:flex;justify-content:space-between;align-items:flex-start">'+
     '<div><div class="detail-name">'+r.name+'</div><div class="detail-fullname">ID: '+r.id+'</div></div>'+
@@ -678,7 +683,8 @@ function openRabbit(id){
 
   html+='<div class="info-card"><h4>'+(lang==='es'?'Información':'Information')+'</h4>'+
     '<div class="info-row"><span class="info-key">ID</span><span class="info-val">'+r.id+'</span></div>'+
-    '<div class="info-row"><span class="info-key">DOB</span><span class="info-val">'+(r.dob||'-')+'</span></div>'+
+    '<div class="info-row"><span class="info-key">DOB</span><span class="info-val">'+fmtDob(r.dob)+'</span></div>'+
+    (r.for_sale&&(isAdmin||isEmp)?'<div class="info-row"><span class="info-key">&#128065; Views</span><span class="info-val" style="color:#1565C0;font-weight:bold">'+(r.views||0)+'</span></div>':'')+
     '<div class="info-row"><span class="info-key">'+(lang==='es'?'Raza':'Breed')+'</span><span class="info-val">'+(r.breed||'-')+'</span></div>'+
     '<div class="info-row"><span class="info-key">Color</span><span class="info-val">'+(r.color||'-')+'</span></div>'+
     '<div class="info-row"><span class="info-key">'+(lang==='es'?'Peso':'Weight')+'</span><span class="info-val">'+(r.weight||'-')+'</span></div>'+
@@ -1075,15 +1081,54 @@ function printPedigree(id){
 function printQR(id){
   var r=lookup(id);
   if(!r){alert('Conejo no encontrado');return;}
+  var LOGO='https://raw.githubusercontent.com/mvzsalvadorfranco-afk/sd-rabbitry/main/logo.png';
   var url='https://sd-rabbitry.vercel.app/?rabbit='+encodeURIComponent(id);
-  var qr='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(url);
+  var qr='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(url);
+  var isFemale=r.sex==='F';
   var win=window.open('','_blank');
-  win.document.write('<html><head><title>QR - '+id+'</title></head><body style="text-align:center;font-family:Arial;padding:20px">');
-  win.document.write('<h2>'+r.name+'</h2><p>'+r.breed+' &bull; '+(r.sex==='M'?'Buck':'Doe')+'</p>');
-  win.document.write('<img src="'+qr+'" width="300" height="300"><br><br>');
-  win.document.write('<p style="font-size:12px;color:#666">'+url+'</p>');
-  win.document.write('<br><button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer">Imprimir QR</button>');
-  win.document.write('</body></html>');
+  var html=[];
+  html.push('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR - '+id+'</title>');
+  html.push('<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#f0f0f0;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}');
+  html.push('.card{background:#fff;border-radius:10px;box-shadow:0 2px 16px rgba(0,0,0,.15);width:280px;overflow:hidden}');
+  html.push('.card-header{background:#1565C0;padding:10px 14px;display:flex;align-items:center;gap:10px}');
+  html.push('.card-header img{width:42px;height:42px;object-fit:contain;border-radius:50%;background:#fff;padding:2px;flex-shrink:0}');
+  html.push('.card-header-text h1{font-size:13px;font-weight:bold;color:#fff;letter-spacing:.5px}');
+  html.push('.card-header-text p{font-size:8px;color:rgba(255,255,255,.8)}');
+  html.push('.card-body{padding:12px 14px 8px;text-align:center}');
+  html.push('.rabbit-name{font-size:18px;font-weight:bold;color:#1565C0}');
+  html.push('.rabbit-info{font-size:11px;color:#666;margin-top:3px}');
+  html.push('.rabbit-dob{font-size:10px;color:#999;margin-top:2px}');
+  html.push('.qr-wrap{padding:8px 14px;display:flex;justify-content:center}');
+  html.push('.qr-box{background:#f5f5f5;border-radius:8px;padding:10px;display:inline-block}');
+  html.push('.scan-text{text-align:center;font-size:9px;color:#888;padding:4px 0 8px}');
+  html.push('.card-footer{background:#f5f5f5;padding:8px 14px;text-align:center;border-top:1px solid #eee}');
+  html.push('.card-footer p{font-size:8px;color:#666;margin-bottom:2px}');
+  html.push('.card-footer small{font-size:7.5px;color:#999}');
+  html.push('.noprint{text-align:center;margin-top:16px}');
+  html.push('@media print{@page{size:3in 4in;margin:0}body{background:#fff;align-items:flex-start;padding:0;min-height:auto}.card{box-shadow:none;border-radius:0;width:100%}.noprint{display:none}}');
+  html.push('</style></head><body>');
+  html.push('<div>');
+  html.push('<div class="card">');
+  html.push('<div class="card-header">');
+  html.push('<img src="'+LOGO+'" alt="S&D Logo">');
+  html.push('<div class="card-header-text"><h1>S&amp;D RABBITRY</h1><p>Quality &bull; Health &bull; Genetics</p></div>');
+  html.push('</div>');
+  html.push('<div class="card-body">');
+  html.push('<div class="rabbit-name">'+r.name+'</div>');
+  html.push('<div class="rabbit-info">'+(r.breed||'-')+' &bull; '+(isFemale?'&#9792; Doe':'&#9794; Buck')+'</div>');
+  html.push('<div class="rabbit-dob">DOB: '+(r.dob||'-')+' &bull; '+( r.color||'-')+'</div>');
+  html.push('</div>');
+  html.push('<div class="qr-wrap"><div class="qr-box"><img src="'+qr+'" width="180" height="180"></div></div>');
+  html.push('<div class="scan-text">Scan to view full pedigree</div>');
+  html.push('<div class="card-footer"><p>sdrabbitry.com</p><small>45812 State Route 309, Alger, Ohio 45812</small></div>');
+  html.push('</div>');
+  html.push('<div class="noprint" style="margin-top:16px;text-align:center">');
+  html.push('<button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:9px 22px;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">&#128424; Imprimir</button>');
+  html.push('<button onclick="window.close()" style="background:#eee;color:#333;border:none;padding:9px 22px;border-radius:6px;font-size:13px;cursor:pointer">Cerrar</button>');
+  html.push('</div></div>');
+  html.push('</body></html>');
+  win.document.open();
+  win.document.write(html.join(''));
   win.document.close();
 }
 
