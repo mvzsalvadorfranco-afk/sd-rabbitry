@@ -414,6 +414,9 @@ function startApp(role){
   currentUser=role;
   document.getElementById('screen-login').style.display='none';
   document.getElementById('main-app').style.display='block';
+  // Hide nav for public
+  var nav=document.querySelector('.bottom-nav');
+  if(nav) nav.style.display=role==='public'?'none':'flex';
   var d=new Date();
   document.getElementById('date-str').textContent=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   var h=d.getHours();
