@@ -709,11 +709,11 @@ function openRabbit(id){
   html+='<div class="info-card"><h4>QR</h4><div style="text-align:center;padding:8px 0">'+
     '<img src="'+qrImg+'" style="width:160px;height:160px;border-radius:8px;border:1px solid var(--border)" alt="QR '+r.id+'">'+
     '<div style="font-size:11px;color:var(--muted);word-break:break-all;margin-top:8px">'+qrUrl+'</div>'+
-    '<div style="display:flex;gap:8px;justify-content:center;margin-top:12px">'+
-    '<button class="btn-outline" onclick="printPedigree(\''+r.id.replace(/'/g, "\\'")+'\')">🖨 Imprimir Pedigree</button>'+
-    '<button class="btn-outline" onclick="printQR(\''+r.id.replace(/'/g, "\\'")+'\')">📱 Imprimir QR</button>'+
-    '<button class="btn-outline" onclick="emailRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">📧 Email</button>'+
-    '<button class="btn-outline" onclick="smsRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">💬 SMS</button>'+
+    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px">'+
+    '<button class="btn-outline" onclick="printPedigree(\''+r.id.replace(/'/g, "\\'")+'\')">🖨 Ver Pedigree</button>'+
+    (isAdmin||isEmp?'<button class="btn-outline" onclick="printQR(\''+r.id.replace(/'/g, "\\'")+'\')">📱 Imprimir QR</button>':'')+
+    (isAdmin||isEmp?'<button class="btn-outline" onclick="emailRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">📧 Email</button>':'')+
+    (isAdmin||isEmp?'<button class="btn-outline" onclick="smsRabbit(\''+r.id.replace(/'/g, "\\'")+'\')">💬 SMS</button>':'')+
     '</div></div></div>';
 
   // Admin: for sale toggle
@@ -1068,7 +1068,7 @@ function printPedigree(id){
   h.push('<div style="border-top:0.5pt solid #ccc;margin-top:3pt;padding-top:3pt;display:flex;justify-content:space-between;font-size:6pt;flex-shrink:0">');
   h.push('<div><i style="color:#555">I certify that this pedigree is correct to the best of my knowledge.</i><br><br><b>S&amp;D Rabbitry</b><br>45812 State Route 309, Alger, Ohio 45812</div>');
   h.push('<div style="text-align:right">Signed: ___________________________<br><br>Date: '+today+'</div></div>');
-  h.push('<div class="noprint"><button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:7pt 18pt;border-radius:4pt;font-size:11pt;cursor:pointer;margin-right:6pt">&#128424; Imprimir</button>');
+  if(currentUser==='admin'||currentUser==='employee'){h.push('<div class="noprint"><button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:7pt 18pt;border-radius:4pt;font-size:11pt;cursor:pointer;margin-right:6pt">&#128424; Imprimir</button>');}
   h.push('<button onclick="document.getElementById(\'ped-overlay\').style.display=\'none\'" style="background:#eee;color:#333;border:none;padding:7pt 18pt;border-radius:4pt;font-size:11pt;cursor:pointer">Cerrar</button></div>');
   h.push('</div></body></html>');
 
