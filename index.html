@@ -1017,7 +1017,7 @@ function printPedigree(id){
   // Col 1
   h.push('<div class="c1"><div style="background:'+mBg+';color:'+mCl+';border:'+mBd+';border-radius:3pt;padding:5pt;width:100%">');
   h.push('<div style="font-size:5pt;font-weight:bold;text-transform:uppercase;opacity:.75;margin-bottom:1pt">Subject</div>');
-  h.push('<div style="font-size:10pt;font-weight:bold;margin-bottom:2pt">'+r.id+'</div>');
+  h.push('<div style="font-size:10pt;font-weight:bold;margin-bottom:2pt">'+r.name+'</div>');
   h.push('<div style="font-size:7pt;font-weight:bold;margin-bottom:2pt;opacity:.9">'+(iF?'&#9792; DOE':'&#9794; BUCK')+'</div>');
   h.push('<div style="font-size:6pt;line-height:1.5;opacity:.9"><b>ID:</b> '+r.id+'<br><b>DOB:</b> '+fmt(r.dob)+'<br><b>COLOR:</b> '+(r.color||'-')+'<br><b>BREED:</b> '+(r.breed||'-')+'<br><b>WEIGHT:</b> '+(r.weight&&r.weight!=='-'?r.weight:'-')+'<br><b>LEGS:</b> '+(r.legs||'-')+'</div></div></div>');
 
