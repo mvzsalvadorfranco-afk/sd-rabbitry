@@ -161,6 +161,7 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 .history-item{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--green-light);font-family:sans-serif}
 .history-date{font-size:11px;color:var(--muted)}
 .history-text{font-size:13px;margin-top:2px}
+@media print{body > *{display:none!important}#ped-overlay{display:block!important;position:static!important;overflow:visible!important}}
 </style>
 </head>
 <body>
@@ -933,7 +934,6 @@ function esc(s){return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 
 // ── QR & EMAIL ───────────────────────────────────────────
 
-var _pedHTML = '';
 function printPedigree(id){
   var r=lookup(id);
   if(!r){alert('Conejo no encontrado');return;}
@@ -950,14 +950,34 @@ function printPedigree(id){
     if(s.indexOf(' 00:00:00')>0){var p=s.split(' ')[0].split('-');if(p.length===3)return p[1]+'/'+p[2]+'/'+p[0];}
     return dob;
   }
-  function cell(rid,lbl,bg,bl){
-    var a=getR(rid);
-    var h='<td style="vertical-align:top;padding:2px"><div style="background:'+bg+';border-left:3px solid '+bl+';border:1px solid '+bl+';border-radius:3px;padding:4px;font-size:7.5px">';
-    h+='<div style="font-size:6px;color:#555;text-transform:uppercase;margin-bottom:1px;font-weight:bold">'+lbl+'</div>';
-    if(a){h+='<b style="font-size:8px">'+a.name+'</b><br>ID: '+a.id+' '+(a.sex==='M'?'&#9794;':'&#9792;')+'<br>DOB: '+fmt(a.dob)+'<br>'+(a.color||'-')+'<br>'+(a.breed||'-');}
-    else{h+='<span style="color:#bbb">'+(rid&&rid!=='-'?rid:'-')+'</span>';}
-    return h+'</div></td>';
+  function gCell(a,lbl,isB){
+    var bg=isB?'#EAF3FF':'#FFEAF2';var bc=isB?'#90BEF5':'#F5A0C0';var bl=isB?'#1565C0':'#E91E63';var sxc=isB?'#1565C0':'#E91E63';var sx=isB?'&#9794; BUCK':'&#9792; DOE';
+    var h='<div style="background:'+bg+';border:0.5pt solid '+bc+';border-left:2pt solid '+bl+';border-radius:2pt;padding:3pt 4pt;width:100%">';
+    if(lbl) h+='<div style="font-size:5pt;color:#555;text-transform:uppercase;font-weight:bold;margin-bottom:1pt">'+lbl+'</div>';
+    if(a){
+      h+='<div style="display:flex;justify-content:space-between;align-items:baseline">';
+      h+='<div style="font-size:7.5pt;font-weight:bold;flex:1;line-height:1.2">'+a.name+'</div>';
+      h+='<div style="font-size:6pt;font-weight:bold;color:'+sxc+';white-space:nowrap;margin-left:2pt">'+sx+'</div></div>';
+      h+='<div style="font-size:6pt;color:#222;line-height:1.4;margin-top:1pt"><b>ID:</b> '+a.id+' &nbsp;<b>DOB:</b> '+fmt(a.dob)+'<br><b>COLOR:</b> '+(a.color||'-')+' &nbsp;<b>BREED:</b> '+(a.breed||'-')+'<br><b>WEIGHT:</b> '+(a.weight&&a.weight!=='-'?a.weight:'-')+' &nbsp;<b>LEGS:</b> '+(a.legs||'-')+'</div>';
+    } else { h+='<div style="font-size:6pt;color:#bbb">'+(lbl?'&mdash;':'')+'</div>'; }
+    return h+'</div>';
   }
+  function ggCell(a,isB){
+    var bg=isB?'#EAF3FF':'#FFEAF2';var bc=isB?'#90BEF5':'#F5A0C0';var bl=isB?'#1565C0':'#E91E63';var sxc=isB?'#1565C0':'#E91E63';var sx=isB?'&#9794; BUCK':'&#9792; DOE';
+    var h='<div style="background:'+bg+';border:0.5pt solid '+bc+';border-left:2pt solid '+bl+';border-radius:2pt;padding:2pt 4pt;width:100%">';
+    if(a){
+      h+='<div style="display:flex;justify-content:space-between;align-items:baseline">';
+      h+='<div style="font-size:7pt;font-weight:bold;flex:1;line-height:1.2">'+a.name+'</div>';
+      h+='<div style="font-size:6pt;font-weight:bold;color:'+sxc+';white-space:nowrap;margin-left:2pt">'+sx+'</div></div>';
+      h+='<div style="font-size:5.5pt;color:#444;line-height:1.4"><b>ID:</b> '+a.id+' &nbsp;<b>DOB:</b> '+fmt(a.dob)+' &nbsp;<b>COLOR:</b> '+(a.color||'-')+' &nbsp;<b>BREED:</b> '+(a.breed||'-')+' &nbsp;<b>WEIGHT:</b> '+(a.weight&&a.weight!=='-'?a.weight:'-')+' &nbsp;<b>LEGS:</b> '+(a.legs||'-')+'</div>';
+    } else { h+='<div style="font-size:5.5pt;color:#bbb">&mdash;</div>'; }
+    return h+'</div>';
+  }
+  function slot(content,flex1){
+    var pad=flex1?'padding-bottom:1.5pt':'padding:1pt 0';
+    return '<div style="flex:1;display:flex;align-items:center;'+pad+'">'+content+'</div>';
+  }
+
   var s=r.sire_id||'',d=r.dam_id||'';
   var sr=getR(s),dr=getR(d);
   var ss=sr?sr.sire_id||'':'',sd=sr?sr.dam_id||'':'';
@@ -969,35 +989,79 @@ function printPedigree(id){
   var dds=ddr?ddr.sire_id||'':'',ddd=ddr?ddr.dam_id||'':'';
   var today=new Date().toLocaleDateString('en-US');
   var iF=r.sex==='F';
-  var p=[];
-  p.push('<html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:8px;background:#fff;width:100%;min-width:100%}table{width:100%;border-collapse:collapse;table-layout:fixed}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;width:100%;margin:0}}</style></head><body>');
-  p.push('<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1565C0;padding-bottom:6px;margin-bottom:6px">');
-  p.push('<img src="'+LOGO+'" width="58" height="58" style="object-fit:contain">');
-  p.push('<div style="text-align:center"><div style="font-size:18px;font-weight:bold;color:#1565C0;letter-spacing:1px">S&amp;D RABBITRY</div><div style="font-size:9px;color:#666">Quality &bull; Health &bull; Genetics</div></div>');
-  p.push('<img src="'+LOGO+'" width="58" height="58" style="object-fit:contain"></div>');
-  p.push('<div style="background:'+(iF?'#FFEAF2':'#1565C0')+';color:'+(iF?'#880E4F':'#fff')+';border-radius:4px;padding:6px 10px;margin-bottom:6px;font-size:9px">');
-  p.push('<b style="font-size:12px">'+r.name+' '+(iF?'&#9792; DOE':'&#9794; BUCK')+'</b><br>');
-  p.push('ID: '+r.id+' | DOB: '+fmt(r.dob)+' | COLOR: '+(r.color||'-')+' | BREED: '+(r.breed||'-')+' | WEIGHT: '+(r.weight||'-')+'</div>');
-  p.push('<table><colgroup><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:19%"><col style="width:19%"><col style="width:7%"></colgroup>');
-  p.push('<tr>'+cell(sss,'GGS','#F5F5F5','#ccc')+cell(ssd,'GGD','#F5F5F5','#ccc')+cell(ss,'G-Sire/Sire','#EAF3FF','#1565C0')+cell(s,'SIRE','#DDEEFF','#1565C0'));
-  p.push('<td rowspan="4" style="vertical-align:middle;padding:4px;width:12%"><div style="background:'+(iF?'#FFEAF2':'#1565C0')+';color:'+(iF?'#880E4F':'#fff')+';border-radius:6px;padding:10px;text-align:center;font-size:10px;font-weight:bold">');
-  p.push(r.id+'<br><span style="font-size:8px;font-weight:normal">'+(iF?'&#9792; Doe':'&#9794; Buck')+'<br>'+(r.breed||'')+'<br>'+(r.color||'')+'</span></div></td></tr>');
-  p.push('<tr>'+cell(sds,'GGS','#F5F5F5','#ccc')+cell(sdd,'GGD','#F5F5F5','#ccc')+cell(sd,'G-Dam/Sire','#FFEAF2','#E91E63')+'<td></td></tr>');
-  p.push('<tr>'+cell(dss,'GGS','#F5F5F5','#ccc')+cell(dsd,'GGD','#F5F5F5','#ccc')+cell(ds,'G-Sire/Dam','#EAF3FF','#1565C0')+cell(d,'DAM','#FFD6E7','#E91E63')+'</tr>');
-  p.push('<tr>'+cell(dds,'GGS','#F5F5F5','#ccc')+cell(ddd,'GGD','#F5F5F5','#ccc')+cell(dd,'G-Dam/Dam','#FFEAF2','#E91E63')+'<td></td></tr>');
-  p.push('</table>');
-  p.push('<div style="border-top:1px solid #ccc;margin-top:6px;padding-top:5px;display:flex;justify-content:space-between;font-size:8px">');
-  p.push('<div><i style="color:#555">I certify that this pedigree is correct to the best of my knowledge.</i><br><br><b>S&amp;D Rabbitry</b><br>45812 State Route 309, Alger, Ohio 45812</div>');
-  p.push('<div style="text-align:right">Signed: ___________________________<br><br>Date: '+today+'</div></div>');
-  p.push('<div style="text-align:center;margin-top:8px" id="ped-btns">');
-  p.push('<button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">&#128424; Imprimir</button>');
-  p.push('<button onclick="window.close()" style="background:#eee;color:#333;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer">Cerrar</button>');
-  p.push('</div></body></html>');
-  _pedHTML = p.join('');
-  var win = window.open('about:blank','_blank');
-  win.document.open();
-  win.document.write(_pedHTML);
-  win.document.close();
+  var mBg=iF?'#FFEAF2':'#1565C0';
+  var mCl=iF?'#880E4F':'#fff';
+  var mBd=iF?'2pt solid #E91E63':'none';
+
+  var css='*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;font-family:Arial,sans-serif;background:#fff}body{padding:6mm}.wrap{width:100%;height:calc(100% - 12mm);display:flex;flex-direction:column}.ped{display:flex;flex:1;gap:3pt;min-height:0}.c1{flex:13;display:flex;align-items:center}.c2{flex:19;display:flex;flex-direction:column}.c3{flex:26;display:flex;flex-direction:column}.c4{flex:42;display:flex;flex-direction:column}.noprint{text-align:center;margin-top:5pt}@media print{@page{size:letter landscape;margin:8mm}html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;height:100%;width:100%}.wrap{width:100%!important;height:100%!important}.ped{width:100%!important}.noprint{display:none!important}}';
+
+  var h=['<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedigree ',id,'</title><style>',css,'</style></head><body><div class="wrap">'];
+
+  h.push('<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1.5pt solid #1565C0;padding-bottom:4pt;margin-bottom:3pt;flex-shrink:0">');
+  h.push('<img src="'+LOGO+'" width="52" height="52" style="object-fit:contain">');
+  h.push('<div style="text-align:center;flex:1"><div style="font-size:17pt;font-weight:bold;color:#1565C0;letter-spacing:0.5pt">S&amp;D RABBITRY</div><div style="font-size:7.5pt;color:#666">Quality &bull; Health &bull; Genetics</div><div style="font-size:6.5pt;color:#aaa">sdrabbitry.com</div></div>');
+  h.push('<img src="'+LOGO+'" width="52" height="52" style="object-fit:contain"></div>');
+  h.push('<div style="background:#1565C0;height:3pt;border-radius:1pt;margin-bottom:3pt;flex-shrink:0"></div>');
+
+  h.push('<div class="ped">');
+
+  // Col 1
+  h.push('<div class="c1"><div style="background:'+mBg+';color:'+mCl+';border:'+mBd+';border-radius:3pt;padding:5pt;width:100%">');
+  h.push('<div style="font-size:5pt;font-weight:bold;text-transform:uppercase;opacity:.75;margin-bottom:1pt">Subject</div>');
+  h.push('<div style="font-size:10pt;font-weight:bold;margin-bottom:2pt">'+r.id+'</div>');
+  h.push('<div style="font-size:7pt;font-weight:bold;margin-bottom:2pt;opacity:.9">'+(iF?'&#9792; DOE':'&#9794; BUCK')+'</div>');
+  h.push('<div style="font-size:6pt;line-height:1.5;opacity:.9"><b>ID:</b> '+r.id+'<br><b>DOB:</b> '+fmt(r.dob)+'<br><b>COLOR:</b> '+(r.color||'-')+'<br><b>BREED:</b> '+(r.breed||'-')+'<br><b>WEIGHT:</b> '+(r.weight&&r.weight!=='-'?r.weight:'-')+'<br><b>LEGS:</b> '+(r.legs||'-')+'</div></div></div>');
+
+  // Col 2 - sire centered in top half, dam in bottom half
+  var isBSire=sr?sr.sex==='M':true; var isBDam=dr?dr.sex==='M':false;
+  var bgS=isBSire?'#EAF3FF':'#FFEAF2',bcS=isBSire?'#90BEF5':'#F5A0C0',blS=isBSire?'#1565C0':'#E91E63',sxcS=isBSire?'#1565C0':'#E91E63',sxS=isBSire?'&#9794; BUCK':'&#9792; DOE';
+  var bgD=isBDam?'#EAF3FF':'#FFEAF2',bcD=isBDam?'#90BEF5':'#F5A0C0',blD=isBDam?'#1565C0':'#E91E63',sxcD=isBDam?'#1565C0':'#E91E63',sxD=isBDam?'&#9794; BUCK':'&#9792; DOE';
+  h.push('<div class="c2">');
+  h.push('<div style="flex:1;display:flex;align-items:center;padding-bottom:1.5pt">');
+  h.push('<div style="background:'+bgS+';border:0.5pt solid '+bcS+';border-left:2pt solid '+blS+';border-radius:2pt;padding:4pt 5pt;width:100%">');
+  h.push('<div style="font-size:5pt;color:#555;text-transform:uppercase;font-weight:bold;margin-bottom:2pt">Sire</div>');
+  if(sr){h.push('<div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:8.5pt;font-weight:bold;flex:1">'+sr.name+'</div><div style="font-size:6.5pt;font-weight:bold;color:'+sxcS+';white-space:nowrap;margin-left:2pt">'+sxS+'</div></div><div style="font-size:6.5pt;color:#222;line-height:1.4;margin-top:1pt"><b>ID:</b> '+sr.id+' &nbsp;<b>DOB:</b> '+fmt(sr.dob)+'<br><b>COLOR:</b> '+(sr.color||'-')+' &nbsp;<b>BREED:</b> '+(sr.breed||'-')+'<br><b>WEIGHT:</b> '+(sr.weight&&sr.weight!=='-'?sr.weight:'-')+' &nbsp;<b>LEGS:</b> '+(sr.legs||'-')+'</div>');}
+  else{h.push('<div style="font-size:6.5pt;color:#bbb">'+(s||'&mdash;')+'</div>');}
+  h.push('</div></div>');
+  h.push('<div style="flex:1;display:flex;align-items:center;padding-top:1.5pt">');
+  h.push('<div style="background:'+bgD+';border:0.5pt solid '+bcD+';border-left:2pt solid '+blD+';border-radius:2pt;padding:4pt 5pt;width:100%">');
+  h.push('<div style="font-size:5pt;color:#555;text-transform:uppercase;font-weight:bold;margin-bottom:2pt">Dam</div>');
+  if(dr){h.push('<div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:8.5pt;font-weight:bold;flex:1">'+dr.name+'</div><div style="font-size:6.5pt;font-weight:bold;color:'+sxcD+';white-space:nowrap;margin-left:2pt">'+sxD+'</div></div><div style="font-size:6.5pt;color:#222;line-height:1.4;margin-top:1pt"><b>ID:</b> '+dr.id+' &nbsp;<b>DOB:</b> '+fmt(dr.dob)+'<br><b>COLOR:</b> '+(dr.color||'-')+' &nbsp;<b>BREED:</b> '+(dr.breed||'-')+'<br><b>WEIGHT:</b> '+(dr.weight&&dr.weight!=='-'?dr.weight:'-')+' &nbsp;<b>LEGS:</b> '+(dr.legs||'-')+'</div>');}
+  else{h.push('<div style="font-size:6.5pt;color:#bbb">'+(d||'&mdash;')+'</div>');}
+  h.push('</div></div></div>');
+
+  // Col 3 - 4 equal slots
+  h.push('<div class="c3">');
+  [[ss,true,'G-Sire/Sire'],[sd,false,'G-Dam/Sire'],[ds,true,'G-Sire/Dam'],[dd,false,'G-Dam/Dam']].forEach(function(g,i){
+    var a=getR(g[0]);var isB=a?a.sex==='M':g[1];
+    var pad=i===0?'padding-bottom:1pt':i===3?'padding-top:1pt':'padding:1pt 0';
+    h.push('<div style="flex:1;display:flex;align-items:center;'+pad+'">'+gCell(a,g[2],isB)+'</div>');
+  });
+  h.push('</div>');
+
+  // Col 4 - 8 equal slots
+  h.push('<div class="c4">');
+  [[sss,true],[ssd,false],[sds,true],[sdd,false],[dss,true],[dsd,false],[dds,true],[ddd,false]].forEach(function(g,i){
+    var a=getR(g[0]);var isB=a?a.sex==='M':g[1];
+    var pad=i===0?'padding-bottom:1pt':i===7?'padding-top:1pt':'padding:1pt 0';
+    h.push('<div style="flex:1;display:flex;align-items:center;'+pad+'">'+ggCell(a,isB)+'</div>');
+  });
+  h.push('</div>');
+
+  h.push('</div>'); // end .ped
+
+  h.push('<div style="border-top:0.5pt solid #ccc;margin-top:3pt;padding-top:3pt;display:flex;justify-content:space-between;font-size:6pt;flex-shrink:0">');
+  h.push('<div><i style="color:#555">I certify that this pedigree is correct to the best of my knowledge.</i><br><br><b>S&amp;D Rabbitry</b><br>45812 State Route 309, Alger, Ohio 45812</div>');
+  h.push('<div style="text-align:right">Signed: ___________________________<br><br>Date: '+today+'</div></div>');
+  h.push('<div class="noprint"><button onclick="window.print()" style="background:#1565C0;color:#fff;border:none;padding:7pt 18pt;border-radius:4pt;font-size:11pt;cursor:pointer;margin-right:6pt">&#128424; Imprimir</button>');
+  h.push('<button onclick="document.getElementById(\'ped-overlay\').style.display=\'none\'" style="background:#eee;color:#333;border:none;padding:7pt 18pt;border-radius:4pt;font-size:11pt;cursor:pointer">Cerrar</button></div>');
+  h.push('</div></body></html>');
+
+  var full=h.join('');
+  var overlay=document.getElementById('ped-overlay');
+  if(!overlay){overlay=document.createElement('div');overlay.id='ped-overlay';overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;overflow-y:auto';document.body.appendChild(overlay);}
+  overlay.innerHTML=full;
+  overlay.style.display='block';
 }
 </script>
 </body>
