@@ -1,0 +1,15 @@
+{
+  "name": "S&D Rabbitry",
+  "short_name": "S&D Rabbitry",
+  "description": "Pedigree & Farm Management",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1565C0",
+  "icons": [
+    { "src": "logo.png", "sizes": "200x200", "type": "image/png", "purpose": "any" },
+    { "src": "logo.png", "sizes": "200x200", "type": "image/png", "purpose": "maskable" }
+  ]
+}
